@@ -98,6 +98,9 @@
   <div class="card" id="videoCard">
     <h2 data-t="videoTitle"></h2>
     <div class="mut" data-t="videoNote"></div>
+    <label data-t="audioSrc"></label>
+    <input id="audioFile" type="file" accept="audio/*,video/*">
+    <div id="aMsg" class="msg"></div>
     <label data-t="bgImages"></label>
     <input id="bgFiles" type="file" accept="image/*" multiple>
     <label data-t="videoSize"></label>
@@ -138,7 +141,7 @@ const T = {
     e429:"حد ختم (429) — کچھ دیر بعد کوشش کریں یا Google AI Studio میں حد دیکھیں۔", eNet:"انٹرنیٹ یا سرور کا مسئلہ۔", eNoAudio:"جواب میں آڈیو نہیں آیا۔",
     videoTitle:"۵۔ کیپشن ویڈیو (تجرباتی)", videoNote:"آپ کی آواز + الفاظ کی ہائی لائٹ والے اردو کیپشن + ویو فارم۔ ویڈیو اصل وقت میں بنتی ہے (۵ منٹ آڈیو = ۵ منٹ)، اس دوران یہ ٹیب کھلا رکھیں۔ الفاظ کا وقت اندازاً ہے۔",
     bgImages:"پس منظر تصاویر (اختیاری، مثلاً ChatGPT سے بنی ہوئی — ترتیب سے دکھائی جائیں گی)", videoSize:"سائز", makeVideo:"🎬 ویڈیو بنائیں", dlVideo:"ویڈیو ڈاؤن لوڈ",
-    vNeedAudio:"👆 پہلے اوپر ▶ آواز بنائیں دبائیں، پھر یہاں ویڈیو بنائیں۔", vMaking:"ویڈیو بن رہی ہے… ٹیب کھلا رکھیں", vDone:"✓ ویڈیو تیار", vNoSupport:"یہ براؤزر ویڈیو ریکارڈنگ سپورٹ نہیں کرتا — Chrome استعمال کریں۔", vWebm:"نوٹ: فائل WebM ہے؛ WhatsApp کے لیے اگر نہ چلے تو Chrome (Android/PC) کا نیا ورژن MP4 بناتا ہے۔",
+    vNeedAudio:"👆 پہلے اوپر ▶ آواز بنائیں دبائیں، یا نیچے اپنی آڈیو فائل اپ لوڈ کریں۔", audioSrc:"یا اپنی آڈیو فائل اپ لوڈ کریں (MP3/WAV/M4A/WhatsApp voice) — کیپشن کے لیے اوپر اسکرپٹ میں وہی متن ہونا چاہیے", aLoaded:"✓ آڈیو لوڈ ہو گئی", aBad:"یہ آڈیو فائل نہیں کھل سکی۔", aNoText:"کیپشن کے لیے اوپر اسکرپٹ باکس میں آڈیو کا متن لکھیں۔", vMaking:"ویڈیو بن رہی ہے… ٹیب کھلا رکھیں", vDone:"✓ ویڈیو تیار", vNoSupport:"یہ براؤزر ویڈیو ریکارڈنگ سپورٹ نہیں کرتا — Chrome استعمال کریں۔", vWebm:"نوٹ: فائل WebM ہے؛ WhatsApp کے لیے اگر نہ چلے تو Chrome (Android/PC) کا نیا ورژن MP4 بناتا ہے۔",
   },
   en: {
     keyTitle:"1. Your Gemini API key", remember:"Remember on this device", testKey:"Test key", clearKey:"Clear key",
@@ -156,7 +159,7 @@ const T = {
     e429:"Quota exceeded (429) — wait and retry, or check limits in Google AI Studio.", eNet:"Network or server problem.", eNoAudio:"No audio in the response.",
     videoTitle:"5. Caption video (experimental)", videoNote:"Your audio + Urdu captions with word highlighting + waveform. Recorded in real time (5 min audio = 5 min), keep this tab open and visible. Word timing is approximate.",
     bgImages:"Background pictures (optional, e.g. made with ChatGPT — shown in order)", videoSize:"Size", makeVideo:"🎬 Make video", dlVideo:"Download video",
-    vNeedAudio:"👆 First press ▶ Generate above, then make the video here.", vMaking:"Making video… keep this tab open", vDone:"✓ Video ready", vNoSupport:"This browser can't record video — use Chrome.", vWebm:"Note: file is WebM; if WhatsApp rejects it, a recent Chrome (Android/PC) produces MP4.",
+    vNeedAudio:"👆 First press ▶ Generate above, or upload your own audio file below.", audioSrc:"Or upload your own audio (MP3/WAV/M4A/WhatsApp voice) — put its text in the Script box above for captions", aLoaded:"✓ Audio loaded", aBad:"Could not open this audio file.", aNoText:"Write the audio's text in the Script box above for captions.", vMaking:"Making video… keep this tab open", vDone:"✓ Video ready", vNoSupport:"This browser can't record video — use Chrome.", vWebm:"Note: file is WebM; if WhatsApp rejects it, a recent Chrome (Android/PC) produces MP4.",
   }
 };
 const OPTS = {
@@ -472,6 +475,23 @@ $("makeVideo").onclick = async () => {
   msg("vMsg", `${t("vDone")} · ${(videoBlob.size / 1048576).toFixed(1)} MB` + (mime.startsWith("video/webm") ? " · " + t("vWebm") : ""), "ok");
 };
 $("stopVideo").onclick = () => vStop?.();
+// uploaded audio: decode, convert to mono 24 kHz, use the script box text as captions
+$("audioFile").onchange = async () => {
+  const f = $("audioFile").files[0]; if (!f) return;
+  try {
+    const tmp = new AudioContext(), dec = await tmp.decodeAudioData(await f.arrayBuffer()); tmp.close();
+    const off = new OfflineAudioContext(1, Math.ceil(dec.duration * SR), SR), s = off.createBufferSource();
+    s.buffer = dec; s.connect(off.destination); s.start();
+    const fl = (await off.startRendering()).getChannelData(0), pcm = new Int16Array(fl.length);
+    for (let i = 0; i < fl.length; i++) pcm[i] = Math.max(-32768, Math.min(32767, fl[i] * 32767));
+    pcmParts = [pcm]; partTexts = [$("script").value.trim()]; wavBlob = wav(pcm);
+    $("player").src = URL.createObjectURL(wavBlob); $("player").hidden = false; $("outBtns").hidden = false;
+    $("makeVideo").disabled = false; $("vNeedAudio").hidden = true;
+    const secs = dec.duration;
+    msg("aMsg", `${t("aLoaded")} · ${Math.floor(secs/60)}:${String(Math.round(secs%60)).padStart(2,"0")}` + (partTexts[0] ? "" : " · " + t("aNoText")), partTexts[0] ? "ok" : "bad");
+  } catch { msg("aMsg", t("aBad"), "bad"); }
+};
+$("script").addEventListener("input", () => { if ($("audioFile").files[0] && pcmParts.length === 1) partTexts = [$("script").value.trim()]; });
 const vName = () => fname(videoBlob.type === "video/mp4" ? "mp4" : "webm");
 $("dlVideo").onclick = () => videoBlob && download(videoBlob, vName());
 $("shareVideo").onclick = async () => {
