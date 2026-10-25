@@ -401,6 +401,10 @@ function pickMime() {
 }
 
 $("makeVideo").onclick = async () => {
+  try { await makeVideo(); }
+  catch (e) { console.error(e); msg("vMsg", "⚠ " + e.message, "bad"); $("makeVideo").disabled = false; $("stopVideo").disabled = true; }
+};
+async function makeVideo() {
   const mime = pickMime();
   if (!mime || !HTMLCanvasElement.prototype.captureStream) return msg("vMsg", t("vNoSupport"), "bad");
   const [W, H] = $("vSize").value.split("x").map(Number);
@@ -409,6 +413,9 @@ $("makeVideo").onclick = async () => {
   await document.fonts.load(font, "اردو");
   ctx.font = font; ctx.direction = "rtl";
   const words = wordTimeline(), pages = layoutPages(ctx, words, W * 0.86, H > W ? 4 : 3);
+
+  // audio graph -> recorder (and speakers, so you can hear it)
+  const pcm = joinPcm(pcmParts), total = pcm.length / SR;
   // pictures: uploaded files (equal time each) take priority, else auto pictures (timed to their scene)
   let pics;
   if ($("bgFiles").files.length) {
@@ -418,9 +425,6 @@ $("makeVideo").onclick = async () => {
     pics = autoPics.filter(p => p.im).map(p => ({ im: p.im, s: Math.min(sceneStart(p.from), total) }));
     if (pics.length) pics[0].s = 0;
   }
-
-  // audio graph -> recorder (and speakers, so you can hear it)
-  const pcm = joinPcm(pcmParts), total = pcm.length / SR;
   const ac = new AudioContext({ sampleRate: SR }), buf = ac.createBuffer(1, pcm.length, SR), ch = buf.getChannelData(0);
   for (let i = 0; i < pcm.length; i++) ch[i] = pcm[i] / 32768;
   const src = ac.createBufferSource(); src.buffer = buf;
@@ -495,7 +499,7 @@ $("makeVideo").onclick = async () => {
   $("vOut").src = URL.createObjectURL(videoBlob); $("vOut").hidden = false; cv.hidden = true;
   $("dlVideo").hidden = false; $("shareVideo").hidden = false;
   msg("vMsg", `${t("vDone")} · ${(videoBlob.size / 1048576).toFixed(1)} MB` + (mime.startsWith("video/webm") ? " · " + t("vWebm") : ""), "ok");
-};
+}
 $("stopVideo").onclick = () => vStop?.();
 // uploaded audio: decode, convert to mono 24 kHz, use the script box text as captions
 $("audioFile").onchange = async () => {
