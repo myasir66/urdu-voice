@@ -114,6 +114,36 @@
     <input id="bgFiles" type="file" accept="image/*" multiple>
     <label data-t="capLines"></label>
     <select id="capLines"><option value="1" selected>1</option><option value="2">2</option><option value="3">3</option></select>
+    <details id="styleBox" style="margin-top:10px">
+      <summary data-t="styleTitle" style="cursor:pointer"></summary>
+      <div class="row">
+        <div><label data-t="sText"></label><input type="color" id="sText" value="#ffffff"></div>
+        <div><label data-t="sHlMode"></label><select id="sHlMode"></select></div>
+      </div>
+      <div class="row">
+        <div><label data-t="sHlBg"></label><input type="color" id="sHlBg" value="#22c55e"></div>
+        <div><label data-t="sHlText"></label><input type="color" id="sHlText" value="#052e14"></div>
+      </div>
+      <div class="row">
+        <div><label data-t="sOutline"></label><input type="color" id="sOutline" value="#000000"></div>
+        <div><label data-t="sOutlineW"></label><input type="range" id="sOutlineW" min="0" max="12" value="0"></div>
+      </div>
+      <div class="row">
+        <div><label data-t="sSize"></label><input type="range" id="sSize" min="60" max="160" value="100"></div>
+        <div><label data-t="sPos"></label><select id="sPos"></select></div>
+      </div>
+      <div class="row">
+        <div><label data-t="sWave"></label><input type="color" id="sWave" value="#22c55e"></div>
+        <div><label data-t="sWaveOn"></label><select id="sWaveOn"></select></div>
+      </div>
+      <div class="row">
+        <div><label data-t="sBg1"></label><input type="color" id="sBg1" value="#0f172a"></div>
+        <div><label data-t="sBg2"></label><input type="color" id="sBg2" value="#14532d"></div>
+      </div>
+      <label data-t="sDark"></label><input type="range" id="sDark" min="0" max="85" value="45">
+      <button id="sReset" data-t="sReset"></button>
+      <canvas id="sPreview" style="width:100%;max-width:260px;display:block;margin:10px auto 0;border-radius:10px;background:#000"></canvas>
+    </details>
     <label data-t="videoSize"></label>
     <select id="vSize">
       <option value="720x1280">9:16 (WhatsApp Status / Reels / Shorts)</option>
@@ -153,7 +183,8 @@ const T = {
     videoTitle:"۵۔ کیپشن ویڈیو (تجرباتی)", videoNote:"آپ کی آواز + الفاظ کی ہائی لائٹ والے اردو کیپشن + ویو فارم۔ ویڈیو اصل وقت میں بنتی ہے (۵ منٹ آڈیو = ۵ منٹ)، اس دوران یہ ٹیب کھلا رکھیں۔ الفاظ کا وقت اندازاً ہے۔",
     bgImages:"یا اپنی تصاویر اپ لوڈ کریں (ترتیب سے برابر وقت کے لیے دکھائی جائیں گی)", videoSize:"سائز", makeVideo:"🎬 ویڈیو بنائیں", dlVideo:"ویڈیو ڈاؤن لوڈ",
     autoTitle:"🖼️ خودکار تصاویر — اسی Gemini کی سے، اسکرپٹ کے مناظر کے مطابق (تعداد اور انداز)", autoPics:"🖼️ تصاویر بنائیں", redo:"دوبارہ", picPlan:"مناظر تیار ہو رہے ہیں…", picDraw:"تصویر", picDone:"✓ تصاویر تیار — ہر تصویر اپنے حصے پر دکھائی جائے گی۔ کسی تصویر کو بدلنے کے لیے 'دوبارہ' دبائیں۔", picNeedText:"پہلے اسکرپٹ باکس میں متن لکھیں۔", picFail:"تصویر نہیں بنی", picCost:"نوٹ: تصاویر Google کی حد/بل میں شمار ہوتی ہیں۔", upReplaces:"(اپ لوڈ کی گئی تصاویر خودکار تصاویر کی جگہ لے لیں گی)",
-    capLines:"کیپشن — ایک وقت میں کتنی لائنیں", vNeedAudio:"👆 پہلے اوپر ▶ آواز بنائیں دبائیں، یا نیچے اپنی آڈیو فائل اپ لوڈ کریں۔", audioSrc:"یا اپنی آڈیو فائل اپ لوڈ کریں (MP3/WAV/M4A/WhatsApp voice) — کیپشن کے لیے اوپر اسکرپٹ میں وہی متن ہونا چاہیے", aLoaded:"✓ آڈیو لوڈ ہو گئی", aBad:"یہ آڈیو فائل نہیں کھل سکی۔", aNoText:"کیپشن کے لیے اوپر اسکرپٹ باکس میں آڈیو کا متن لکھیں۔", vMaking:"ویڈیو بن رہی ہے… ٹیب کھلا رکھیں", vDone:"✓ ویڈیو تیار", vNoSupport:"یہ براؤزر ویڈیو ریکارڈنگ سپورٹ نہیں کرتا — Chrome استعمال کریں۔", vWebm:"نوٹ: فائل WebM ہے؛ WhatsApp کے لیے اگر نہ چلے تو Chrome (Android/PC) کا نیا ورژن MP4 بناتا ہے۔",
+    capLines:"کیپشن — ایک وقت میں کتنی لائنیں", styleTitle:"🎨 رنگ اور انداز (کلک کریں)", sText:"متن کا رنگ", sHlMode:"ہائی لائٹ", sHlBg:"ہائی لائٹ کا رنگ", sHlText:"ہائی لائٹ والے لفظ کا رنگ", sOutline:"آؤٹ لائن کا رنگ", sOutlineW:"آؤٹ لائن موٹائی", sSize:"فونٹ سائز", sPos:"کیپشن کی جگہ", sWave:"ویو فارم کا رنگ", sWaveOn:"ویو فارم", sBg1:"پس منظر رنگ ۱ (تصویر نہ ہو تو)", sBg2:"پس منظر رنگ ۲", sDark:"تصویر پر اندھیرا", sReset:"ڈیفالٹ پر واپس",
+    hlModes:["ڈبہ","صرف لفظ کا رنگ","انڈر لائن","کوئی نہیں"], posModes:["اوپر","درمیان","نیچے"], onOff:["دکھائیں","چھپائیں"], sample:"یہ ایک نمونہ لائن ہے", vNeedAudio:"👆 پہلے اوپر ▶ آواز بنائیں دبائیں، یا نیچے اپنی آڈیو فائل اپ لوڈ کریں۔", audioSrc:"یا اپنی آڈیو فائل اپ لوڈ کریں (MP3/WAV/M4A/WhatsApp voice) — کیپشن کے لیے اوپر اسکرپٹ میں وہی متن ہونا چاہیے", aLoaded:"✓ آڈیو لوڈ ہو گئی", aBad:"یہ آڈیو فائل نہیں کھل سکی۔", aNoText:"کیپشن کے لیے اوپر اسکرپٹ باکس میں آڈیو کا متن لکھیں۔", vMaking:"ویڈیو بن رہی ہے… ٹیب کھلا رکھیں", vDone:"✓ ویڈیو تیار", vNoSupport:"یہ براؤزر ویڈیو ریکارڈنگ سپورٹ نہیں کرتا — Chrome استعمال کریں۔", vWebm:"نوٹ: فائل WebM ہے؛ WhatsApp کے لیے اگر نہ چلے تو Chrome (Android/PC) کا نیا ورژن MP4 بناتا ہے۔",
   },
   en: {
     keyTitle:"1. Your Gemini API key", remember:"Remember on this device", testKey:"Test key", clearKey:"Clear key",
@@ -172,7 +203,8 @@ const T = {
     videoTitle:"5. Caption video (experimental)", videoNote:"Your audio + Urdu captions with word highlighting + waveform. Recorded in real time (5 min audio = 5 min), keep this tab open and visible. Word timing is approximate.",
     bgImages:"Or upload your own pictures (shown in order, equal time each)", videoSize:"Size", makeVideo:"🎬 Make video", dlVideo:"Download video",
     autoTitle:"🖼️ Auto pictures — same Gemini key, one per scene of the script (count and style)", autoPics:"🖼️ Make pictures", redo:"Redo", picPlan:"Planning scenes…", picDraw:"Picture", picDone:"✓ Pictures ready — each is shown during its part of the script. Press Redo on any picture to replace it.", picNeedText:"Write the script in the Script box first.", picFail:"picture failed", picCost:"Note: pictures count toward your Google quota/bill.", upReplaces:"(uploaded pictures replace the auto pictures)",
-    capLines:"Captions — lines shown at a time", vNeedAudio:"👆 First press ▶ Generate above, or upload your own audio file below.", audioSrc:"Or upload your own audio (MP3/WAV/M4A/WhatsApp voice) — put its text in the Script box above for captions", aLoaded:"✓ Audio loaded", aBad:"Could not open this audio file.", aNoText:"Write the audio's text in the Script box above for captions.", vMaking:"Making video… keep this tab open", vDone:"✓ Video ready", vNoSupport:"This browser can't record video — use Chrome.", vWebm:"Note: file is WebM; if WhatsApp rejects it, a recent Chrome (Android/PC) produces MP4.",
+    capLines:"Captions — lines shown at a time", styleTitle:"🎨 Colours & style (click)", sText:"Text colour", sHlMode:"Highlight", sHlBg:"Highlight colour", sHlText:"Highlighted word colour", sOutline:"Outline colour", sOutlineW:"Outline thickness", sSize:"Font size", sPos:"Caption position", sWave:"Waveform colour", sWaveOn:"Waveform", sBg1:"Background colour 1 (no picture)", sBg2:"Background colour 2", sDark:"Darken picture", sReset:"Reset to default",
+    hlModes:["Box","Word colour only","Underline","None"], posModes:["Top","Middle","Bottom"], onOff:["Show","Hide"], sample:"یہ ایک نمونہ لائن ہے", vNeedAudio:"👆 First press ▶ Generate above, or upload your own audio file below.", audioSrc:"Or upload your own audio (MP3/WAV/M4A/WhatsApp voice) — put its text in the Script box above for captions", aLoaded:"✓ Audio loaded", aBad:"Could not open this audio file.", aNoText:"Write the audio's text in the Script box above for captions.", vMaking:"Making video… keep this tab open", vDone:"✓ Video ready", vNoSupport:"This browser can't record video — use Chrome.", vWebm:"Note: file is WebM; if WhatsApp rejects it, a recent Chrome (Android/PC) produces MP4.",
   }
 };
 const OPTS = {
@@ -201,6 +233,7 @@ function applyLang() {
   document.querySelectorAll("[data-tp]").forEach(e => e.placeholder = t(e.dataset.tp));
   $("langBtn").textContent = lang === "ur" ? "English" : "اردو";
   { const ps = $("picStyle"), v = ps.selectedIndex; ps.innerHTML = STYLES[lang].map((x,i) => `<option value="${i}">${x}</option>`).join(""); ps.selectedIndex = Math.max(0, v); }
+  fillStyleSelects();
   for (const k of ["expr","pace","accent"]) {
     const s = $(k), v = s.selectedIndex;
     s.innerHTML = OPTS[k][lang].map((x,i) => `<option value="${i}">${x}</option>`).join("");
@@ -411,7 +444,7 @@ async function makeVideo() {
   if (!mime || !HTMLCanvasElement.prototype.captureStream) return msg("vMsg", t("vNoSupport"), "bad");
   const [W, H] = $("vSize").value.split("x").map(Number);
   const cv = $("vCanvas"), ctx = cv.getContext("2d"); cv.width = W; cv.height = H;
-  const nLines = parseInt($("capLines").value), fontPx = Math.round(Math.min(W, H) * (nLines === 1 ? 0.075 : 0.058)), font = `${fontPx}px "Noto Nastaliq Urdu"`;
+  const nLines = parseInt($("capLines").value), st = getStyle(), fontPx = Math.round(Math.min(W, H) * (nLines === 1 ? 0.075 : 0.058) * st.size / 100), font = `${fontPx}px "Noto Nastaliq Urdu"`;
   await document.fonts.load(font, "اردو");
   ctx.font = font; ctx.direction = "rtl";
   const words = wordTimeline(), pages = layoutPages(ctx, words, W * 0.86, nLines);
@@ -445,48 +478,10 @@ async function makeVideo() {
   vStop = () => { cancelled = true; end(); };
   src.onended = end;
 
-  const bars = 48, lineH = fontPx * 2.1;
+  const scene = { pics, total, pcm, pages, font, fontPx, st };
   function frame() {
     const now = Math.min(ac.currentTime - start, total);
-    // background: picture slideshow with slow zoom, or gradient
-    if (pics.length) {
-      let k = 0; while (k + 1 < pics.length && pics[k + 1].s <= now) k++;
-      const segEnd = k + 1 < pics.length ? pics[k + 1].s : total, f = Math.min(1, (now - pics[k].s) / Math.max(1, segEnd - pics[k].s));
-      drawCover(ctx, pics[k].im, W, H, 1 + 0.08 * f);
-      ctx.fillStyle = "rgba(0,0,0,0.45)"; ctx.fillRect(0, 0, W, H);
-    } else {
-      const g = ctx.createLinearGradient(0, 0, W, H); g.addColorStop(0, "#0f172a"); g.addColorStop(1, "#14532d");
-      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-    }
-    // waveform from the audio around "now"
-    const i0 = Math.floor(now * SR), win = Math.floor(SR * 0.04), bw = W * 0.7 / bars, wy = H * 0.18;
-    ctx.fillStyle = "rgba(34,197,94,0.9)";
-    for (let b = 0; b < bars; b++) {
-      let peak = 0; const o = i0 + (b - bars / 2) * win;
-      for (let j = 0; j < win; j += 24) peak = Math.max(peak, Math.abs(pcm[o + j] || 0));
-      const h = Math.max(4, (peak / 32768) * H * 0.12);
-      ctx.fillRect(W * 0.15 + b * bw, wy - h / 2, bw * 0.6, h);
-    }
-    // captions: current page, current word highlighted, drawn right-to-left
-    const page = pages.find(p => now >= p.s - 0.05 && now < p.e + GAP) || pages.findLast(p => p.s <= now);
-    if (page) {
-      ctx.font = font; ctx.textAlign = "right"; ctx.textBaseline = "middle";
-      const top = H * (H > W ? 0.62 : 0.6) - (page.lines.length - 1) * lineH / 2, space = ctx.measureText(" ").width;
-      page.lines.forEach((ln, li) => {
-        const lw = ln.reduce((n, w) => n + w.width, 0) + space * (ln.length - 1);
-        let x = W / 2 + lw / 2; const y = top + li * lineH;
-        ln.forEach(wd => {
-          const on = now >= wd.s && now < wd.e;
-          if (on) { ctx.fillStyle = "rgba(34,197,94,0.95)"; ctx.fillRect(x - wd.width - 8, y - lineH * 0.42, wd.width + 16, lineH * 0.84); }
-          ctx.fillStyle = on ? "#052e14" : (now >= wd.e ? "#ffffff" : "rgba(255,255,255,0.7)");
-          ctx.fillText(wd.w, x, y);
-          x -= wd.width + space;
-        });
-      });
-    }
-    // progress line
-    ctx.fillStyle = "rgba(255,255,255,0.25)"; ctx.fillRect(0, H - 8, W, 8);
-    ctx.fillStyle = "#22c55e"; ctx.fillRect(W - W * now / total, H - 8, W * now / total, 8);
+    drawScene(ctx, W, H, now, scene);
     $("vProg").value = now;
     raf = requestAnimationFrame(frame);
   }
@@ -528,6 +523,84 @@ $("shareVideo").onclick = async () => {
   if (navigator.canShare?.({ files: [file] })) { try { await navigator.share({ files: [file], title: "Urdu Voice" }); } catch {} }
   else download(videoBlob, file.name);
 };
+
+// ---- caption style ----
+const STYLE_IDS = ["sText","sHlMode","sHlBg","sHlText","sOutline","sOutlineW","sSize","sPos","sWave","sWaveOn","sBg1","sBg2","sDark"];
+const STYLE_DEF = { sText:"#ffffff", sHlMode:"0", sHlBg:"#22c55e", sHlText:"#052e14", sOutline:"#000000", sOutlineW:"0", sSize:"100", sPos:"1",
+                    sWave:"#22c55e", sWaveOn:"0", sBg1:"#0f172a", sBg2:"#14532d", sDark:"45" };
+function getStyle() {
+  const v = id => $(id).value;
+  return { text: v("sText"), hl: +v("sHlMode"), hlBg: v("sHlBg"), hlText: v("sHlText"), outline: v("sOutline"), outlineW: +v("sOutlineW"),
+           size: +v("sSize"), pos: +v("sPos"), wave: v("sWave"), waveOn: v("sWaveOn") === "0", bg1: v("sBg1"), bg2: v("sBg2"), dark: +v("sDark") / 100 };
+}
+function fillStyleSelects() {
+  for (const [id, key] of [["sHlMode","hlModes"],["sPos","posModes"],["sWaveOn","onOff"]]) {
+    const el = $(id), cur = el.value || JSON.parse(localStorage.getItem("uv_style") || "{}")[id] || STYLE_DEF[id];
+    el.innerHTML = t(key).map((x, i) => `<option value="${i}">${x}</option>`).join(""); el.value = cur;
+  }
+}
+function saveStyle() { localStorage.setItem("uv_style", JSON.stringify(Object.fromEntries(STYLE_IDS.map(id => [id, $(id).value])))); drawPreview(); }
+function loadStyle() { const sv = JSON.parse(localStorage.getItem("uv_style") || "{}"); STYLE_IDS.forEach(id => $(id).value = sv[id] ?? STYLE_DEF[id]); }
+function hexA(hex, a) { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; }
+
+// one video frame (also used for the style preview)
+function drawScene(ctx, W, H, now, d) {
+  const { pics, total, pcm, pages, font, fontPx, st } = d, bars = 48, lineH = fontPx * 2.1;
+  if (pics.length) {
+    let k = 0; while (k + 1 < pics.length && pics[k + 1].s <= now) k++;
+    const segEnd = k + 1 < pics.length ? pics[k + 1].s : total, f = Math.min(1, (now - pics[k].s) / Math.max(1, segEnd - pics[k].s));
+    drawCover(ctx, pics[k].im, W, H, 1 + 0.08 * f);
+    ctx.fillStyle = `rgba(0,0,0,${st.dark})`; ctx.fillRect(0, 0, W, H);
+  } else {
+    const g = ctx.createLinearGradient(0, 0, W, H); g.addColorStop(0, st.bg1); g.addColorStop(1, st.bg2);
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  }
+  const capY = H * [0.22, H > W ? 0.62 : 0.6, 0.84][st.pos];
+  if (st.waveOn) {
+    const i0 = Math.floor(now * SR), win = Math.floor(SR * 0.04), bw = W * 0.7 / bars, wy = st.pos === 0 ? H * 0.82 : H * 0.18;
+    ctx.fillStyle = hexA(st.wave, 0.9);
+    for (let b = 0; b < bars; b++) {
+      let peak = 0; const o = i0 + (b - bars / 2) * win;
+      for (let j = 0; j < win; j += 24) peak = Math.max(peak, Math.abs(pcm[o + j] || 0));
+      const h = Math.max(4, (peak / 32768) * H * 0.12);
+      ctx.fillRect(W * 0.15 + b * bw, wy - h / 2, bw * 0.6, h);
+    }
+  }
+  const page = pages.find(p => now >= p.s - 0.05 && now < p.e + GAP) || pages.findLast(p => p.s <= now);
+  if (page) {
+    ctx.font = font; ctx.textAlign = "right"; ctx.textBaseline = "middle"; ctx.lineJoin = "round";
+    const top = capY - (page.lines.length - 1) * lineH / 2, space = ctx.measureText(" ").width;
+    page.lines.forEach((ln, li) => {
+      const lw = ln.reduce((n, w) => n + w.width, 0) + space * (ln.length - 1);
+      let x = W / 2 + lw / 2; const y = top + li * lineH;
+      ln.forEach(wd => {
+        const on = st.hl !== 3 && now >= wd.s && now < wd.e;
+        if (on && st.hl === 0) { ctx.fillStyle = hexA(st.hlBg, 0.95); ctx.fillRect(x - wd.width - 8, y - lineH * 0.42, wd.width + 16, lineH * 0.84); }
+        if (on && st.hl === 2) { ctx.fillStyle = st.hlBg; ctx.fillRect(x - wd.width, y + lineH * 0.36, wd.width, Math.max(4, fontPx * 0.09)); }
+        if (st.outlineW && !(on && st.hl === 0)) { ctx.strokeStyle = st.outline; ctx.lineWidth = st.outlineW * fontPx / 40; ctx.strokeText(wd.w, x, y); }
+        ctx.fillStyle = on ? (st.hl === 0 ? st.hlText : st.hlBg) : (now >= wd.e || st.hl === 3 ? st.text : hexA(st.text, 0.7));
+        ctx.fillText(wd.w, x, y);
+        x -= wd.width + space;
+      });
+    });
+  }
+  ctx.fillStyle = "rgba(255,255,255,0.25)"; ctx.fillRect(0, H - 8, W, 8);
+  ctx.fillStyle = st.wave; ctx.fillRect(W - W * now / total, H - 8, W * now / total, 8);
+}
+
+let previewImg = null;
+async function drawPreview() {
+  const [W, H] = $("vSize").value.split("x").map(Number), cv = $("sPreview"), ctx = cv.getContext("2d");
+  cv.width = W; cv.height = H;
+  const st = getStyle(), nLines = parseInt($("capLines").value);
+  const fontPx = Math.round(Math.min(W, H) * (nLines === 1 ? 0.075 : 0.058) * st.size / 100), font = `${fontPx}px "Noto Nastaliq Urdu"`;
+  await document.fonts.load(font, "اردو"); ctx.font = font; ctx.direction = "rtl";
+  const ws = t("sample").split(" "), words = ws.map((w, i) => ({ w, s: i, e: i + 1, part: 0 }));
+  const pages = layoutPages(ctx, words, W * 0.86, nLines);
+  const pcm = new Int16Array(SR * 6).map((_, i) => 12000 * Math.sin(i / 9) * Math.abs(Math.sin(i / 2500)));
+  const pic = autoPics.find(p => p.im)?.im || previewImg;
+  drawScene(ctx, W, H, 1.5, { pics: pic ? [{ im: pic, s: 0 }] : [], total: 5, pcm, pages, font, fontPx, st });
+}
 
 // ---- auto pictures (same Gemini key) ----
 const STYLES = {
@@ -633,7 +706,13 @@ $("voice").innerHTML = VOICES.map(v => `<option>${v}</option>`).join("");
 fillModels(JSON.parse(localStorage.getItem("uv_models") || "null") || DEFAULT_MODELS);
 const saved = localStorage.getItem("uv_key"); if (saved) { $("key").value = saved; $("remember").checked = true; }
 lang = localStorage.getItem("uv_lang") || "ur";
+loadStyle();
 applyLang();
+STYLE_IDS.forEach(id => $(id).addEventListener("input", saveStyle));
+$("sReset").onclick = () => { STYLE_IDS.forEach(id => $(id).value = STYLE_DEF[id]); saveStyle(); };
+$("vSize").addEventListener("change", drawPreview); $("capLines").addEventListener("change", drawPreview);
+$("styleBox").addEventListener("toggle", drawPreview);
+$("bgFiles").addEventListener("change", async () => { previewImg = (await loadImages([...$("bgFiles").files].slice(0, 1)))[0] || null; drawPreview(); });
 </script>
 </body>
 </html>
