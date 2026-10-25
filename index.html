@@ -30,6 +30,8 @@
   progress { width:100%; height:14px; }
   audio { width:100%; margin-top:8px; }
   a { color:#60a5fa; }
+  details.adv { margin-top:10px; border-top:1px dashed var(--bd); padding-top:6px; }
+  details.adv summary { cursor:pointer; color:var(--mut); font-size:14px; }
   .chk { display:flex; align-items:center; gap:6px; } .chk input { width:auto; }
 </style>
 </head>
@@ -48,12 +50,14 @@
     <button id="testKey" data-t="testKey"></button>
     <button id="clearKey" data-t="clearKey"></button>
     <div class="mut"><a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" data-t="getKey"></a> · <span data-t="keyNote"></span></div>
-    <label data-t="model"></label>
-    <div class="row">
-      <select id="model" class="ltr"></select>
-      <button id="loadModels" data-t="loadModels" style="flex:0 0 auto"></button>
-    </div>
     <div id="keyMsg" class="msg"></div>
+    <details class="adv"><summary data-t="advanced"></summary>
+      <label data-t="model"></label>
+      <div class="row">
+        <select id="model" class="ltr"></select>
+        <button id="loadModels" data-t="loadModels" style="flex:0 0 auto"></button>
+      </div>
+    </details>
   </div>
 
   <!-- 2. Script -->
@@ -67,16 +71,16 @@
   <!-- 3. Voice & style -->
   <div class="card">
     <h2 data-t="voiceTitle"></h2>
-    <div class="row">
-      <div><label data-t="voice"></label><select id="voice" class="ltr"></select></div>
-      <div><label data-t="expr"></label><select id="expr"></select></div>
-    </div>
-    <div class="row">
-      <div><label data-t="pace"></label><select id="pace"></select></div>
-      <div><label data-t="accent"></label><select id="accent"></select></div>
-    </div>
-    <label data-t="direction"></label>
-    <input id="direction" data-tp="directionPh">
+    <label data-t="voice"></label><select id="voice" class="ltr"></select>
+    <details class="adv"><summary data-t="advanced"></summary>
+      <div class="row">
+        <div><label data-t="expr"></label><select id="expr"></select></div>
+        <div><label data-t="pace"></label><select id="pace"></select></div>
+      </div>
+      <label data-t="accent"></label><select id="accent"></select>
+      <label data-t="direction"></label>
+      <input id="direction" data-tp="directionPh">
+    </details>
   </div>
 
   <!-- 4. Generate -->
@@ -101,21 +105,26 @@
     <label data-t="audioSrc"></label>
     <input id="audioFile" type="file" accept="audio/*,video/*">
     <div id="aMsg" class="msg"></div>
-    <label data-t="autoTitle"></label>
-    <div class="row">
-      <select id="nPics"><option>4</option><option>6</option><option selected>8</option><option>10</option><option>12</option><option>16</option></select>
-      <select id="picStyle"></select>
-    </div>
     <button id="autoPics" data-t="autoPics"></button>
     <button id="stopPics" data-t="cancel" disabled></button>
     <div id="pMsg" class="msg"></div>
     <div id="thumbs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-top:8px"></div>
     <label data-t="bgImages"></label>
     <input id="bgFiles" type="file" accept="image/*" multiple>
+    <label data-t="videoSize"></label>
+    <select id="vSize">
+      <option value="720x1280">9:16 (WhatsApp Status / Reels / Shorts)</option>
+      <option value="1280x720">16:9 (YouTube)</option>
+      <option value="1080x1080">1:1</option>
+    </select>
+    <details class="adv" id="styleBox"><summary data-t="advanced"></summary>
+    <label data-t="autoTitle"></label>
+    <div class="row">
+      <select id="nPics"><option>4</option><option>6</option><option selected>8</option><option>10</option><option>12</option><option>16</option></select>
+      <select id="picStyle"></select>
+    </div>
     <label data-t="capLines"></label>
     <select id="capLines"><option value="1" selected>1</option><option value="2">2</option><option value="3">3</option></select>
-    <details id="styleBox" style="margin-top:10px">
-      <summary data-t="styleTitle" style="cursor:pointer"></summary>
       <div class="row">
         <div><label data-t="sText"></label><input type="color" id="sText" value="#ffffff"></div>
         <div><label data-t="sHlMode"></label><select id="sHlMode"></select></div>
@@ -146,12 +155,6 @@
       <button id="sReset" data-t="sReset"></button>
       <canvas id="sPreview" style="width:100%;max-width:260px;display:block;margin:10px auto 0;border-radius:10px;background:#000"></canvas>
     </details>
-    <label data-t="videoSize"></label>
-    <select id="vSize">
-      <option value="720x1280">9:16 (WhatsApp Status / Reels / Shorts)</option>
-      <option value="1280x720">16:9 (YouTube)</option>
-      <option value="1080x1080">1:1</option>
-    </select>
     <button id="makeVideo" class="pri" data-t="makeVideo" disabled></button>
     <div id="vNeedAudio" class="mut" data-t="vNeedAudio"></div>
     <button id="stopVideo" data-t="cancel" disabled></button>
@@ -182,10 +185,10 @@ const T = {
     part:"حصہ", of:"از", retry:"دوبارہ کوشش", done:"✓ مکمل", duration:"دورانیہ", size:"سائز", cancelled:"روک دیا گیا۔", mp3Wait:"MP3 بن رہا ہے…",
     e400:"درخواست غلط ہے (400) — ماڈل کا نام یا متن چیک کریں۔", e401:"کی غلط ہے یا اجازت نہیں (401/403)۔", e404:"یہ ماڈل موجود نہیں (404) — 'ماڈل لوڈ کریں' دبائیں۔",
     e429:"حد ختم (429) — کچھ دیر بعد کوشش کریں یا Google AI Studio میں حد دیکھیں۔", eNet:"انٹرنیٹ یا سرور کا مسئلہ۔", eNoAudio:"جواب میں آڈیو نہیں آیا۔",
-    videoTitle:"۵۔ کیپشن ویڈیو (تجرباتی)", videoNote:"آپ کی آواز + الفاظ کی ہائی لائٹ والے اردو کیپشن + ویو فارم۔ ویڈیو اصل وقت میں بنتی ہے (۵ منٹ آڈیو = ۵ منٹ)، اس دوران یہ ٹیب کھلا رکھیں۔ الفاظ کا وقت اندازاً ہے۔",
+    videoTitle:"۵۔ کیپشن ویڈیو (تجرباتی)", videoNote:"آواز + اردو کیپشن۔ ویڈیو بننے میں آڈیو جتنا وقت لگتا ہے، ٹیب کھلا رکھیں۔",
     bgImages:"یا اپنی تصاویر اپ لوڈ کریں (ترتیب سے برابر وقت کے لیے دکھائی جائیں گی)", videoSize:"سائز", makeVideo:"🎬 ویڈیو بنائیں", dlVideo:"ویڈیو ڈاؤن لوڈ",
-    autoTitle:"🖼️ خودکار تصاویر — اسی Gemini کی سے، اسکرپٹ کے مناظر کے مطابق (تعداد اور انداز)", autoPics:"🖼️ تصاویر بنائیں", redo:"دوبارہ", picPlan:"مناظر تیار ہو رہے ہیں…", picDraw:"تصویر", picDone:"✓ تصاویر تیار — ہر تصویر اپنے حصے پر دکھائی جائے گی۔ کسی تصویر کو بدلنے کے لیے 'دوبارہ' دبائیں۔", picNeedText:"پہلے اسکرپٹ باکس میں متن لکھیں۔", picFail:"تصویر نہیں بنی", picCost:"نوٹ: تصاویر Google کی حد/بل میں شمار ہوتی ہیں۔", upReplaces:"(اپ لوڈ کی گئی تصاویر خودکار تصاویر کی جگہ لے لیں گی)",
-    capLines:"کیپشن — ایک وقت میں کتنی لائنیں", styleTitle:"🎨 رنگ اور انداز (کلک کریں)", sText:"متن کا رنگ", sHlMode:"ہائی لائٹ", sHlBg:"ہائی لائٹ کا رنگ", sHlText:"ہائی لائٹ والے لفظ کا رنگ", sOutline:"آؤٹ لائن کا رنگ", sOutlineW:"آؤٹ لائن موٹائی", sSize:"فونٹ سائز", sPos:"کیپشن کی جگہ", sWave:"ویو فارم کا رنگ", sWaveOn:"ویو فارم", sBg1:"پس منظر رنگ ۱ (تصویر نہ ہو تو)", sBg2:"پس منظر رنگ ۲", sDark:"تصویر پر اندھیرا", sReset:"ڈیفالٹ پر واپس", sOffset:"ہائی لائٹ کا وقت (ملی سیکنڈ) — دیر سے لگے تو بائیں (منفی) کریں:",
+    autoTitle:"خودکار تصاویر: تعداد اور انداز", autoPics:"🖼️ تصاویر بنائیں", redo:"دوبارہ", picPlan:"مناظر تیار ہو رہے ہیں…", picDraw:"تصویر", picDone:"✓ تصاویر تیار — ہر تصویر اپنے حصے پر دکھائی جائے گی۔ کسی تصویر کو بدلنے کے لیے 'دوبارہ' دبائیں۔", picNeedText:"پہلے اسکرپٹ باکس میں متن لکھیں۔", picFail:"تصویر نہیں بنی", picCost:"نوٹ: تصاویر Google کی حد/بل میں شمار ہوتی ہیں۔", upReplaces:"(اپ لوڈ کی گئی تصاویر خودکار تصاویر کی جگہ لے لیں گی)",
+    advanced:"⚙️ مزید سیٹنگز (اختیاری)", capLines:"کیپشن — ایک وقت میں کتنی لائنیں", styleTitle:"🎨 رنگ اور انداز (کلک کریں)", sText:"متن کا رنگ", sHlMode:"ہائی لائٹ", sHlBg:"ہائی لائٹ کا رنگ", sHlText:"ہائی لائٹ والے لفظ کا رنگ", sOutline:"آؤٹ لائن کا رنگ", sOutlineW:"آؤٹ لائن موٹائی", sSize:"فونٹ سائز", sPos:"کیپشن کی جگہ", sWave:"ویو فارم کا رنگ", sWaveOn:"ویو فارم", sBg1:"پس منظر رنگ ۱ (تصویر نہ ہو تو)", sBg2:"پس منظر رنگ ۲", sDark:"تصویر پر اندھیرا", sReset:"ڈیفالٹ پر واپس", sOffset:"ہائی لائٹ کا وقت (ملی سیکنڈ) — دیر سے لگے تو بائیں (منفی) کریں:",
     hlModes:["ڈبہ","صرف لفظ کا رنگ","انڈر لائن","کوئی نہیں"], posModes:["اوپر","درمیان","نیچے"], onOff:["دکھائیں","چھپائیں"], sample:"یہ ایک نمونہ لائن ہے", vNeedAudio:"👆 پہلے اوپر ▶ آواز بنائیں دبائیں، یا نیچے اپنی آڈیو فائل اپ لوڈ کریں۔", audioSrc:"یا اپنی آڈیو فائل اپ لوڈ کریں (MP3/WAV/M4A/WhatsApp voice) — کیپشن کے لیے اوپر اسکرپٹ میں وہی متن ہونا چاہیے", aLoaded:"✓ آڈیو لوڈ ہو گئی", aBad:"یہ آڈیو فائل نہیں کھل سکی۔", aNoText:"کیپشن کے لیے اوپر اسکرپٹ باکس میں آڈیو کا متن لکھیں۔", vMaking:"ویڈیو بن رہی ہے… ٹیب کھلا رکھیں", vDone:"✓ ویڈیو تیار", vNoSupport:"یہ براؤزر ویڈیو ریکارڈنگ سپورٹ نہیں کرتا — Chrome استعمال کریں۔", vWebm:"نوٹ: فائل WebM ہے؛ WhatsApp کے لیے اگر نہ چلے تو Chrome (Android/PC) کا نیا ورژن MP4 بناتا ہے۔",
   },
   en: {
@@ -202,10 +205,10 @@ const T = {
     part:"Part", of:"of", retry:"retrying", done:"✓ Done", duration:"Length", size:"Size", cancelled:"Cancelled.", mp3Wait:"Encoding MP3…",
     e400:"Bad request (400) — check the model name or text.", e401:"Invalid key or no permission (401/403).", e404:"Model not found (404) — press 'Load models'.",
     e429:"Quota exceeded (429) — wait and retry, or check limits in Google AI Studio.", eNet:"Network or server problem.", eNoAudio:"No audio in the response.",
-    videoTitle:"5. Caption video (experimental)", videoNote:"Your audio + Urdu captions with word highlighting + waveform. Recorded in real time (5 min audio = 5 min), keep this tab open and visible. Word timing is approximate.",
+    videoTitle:"5. Caption video (experimental)", videoNote:"Audio + Urdu captions. Takes as long as the audio — keep this tab open.",
     bgImages:"Or upload your own pictures (shown in order, equal time each)", videoSize:"Size", makeVideo:"🎬 Make video", dlVideo:"Download video",
-    autoTitle:"🖼️ Auto pictures — same Gemini key, one per scene of the script (count and style)", autoPics:"🖼️ Make pictures", redo:"Redo", picPlan:"Planning scenes…", picDraw:"Picture", picDone:"✓ Pictures ready — each is shown during its part of the script. Press Redo on any picture to replace it.", picNeedText:"Write the script in the Script box first.", picFail:"picture failed", picCost:"Note: pictures count toward your Google quota/bill.", upReplaces:"(uploaded pictures replace the auto pictures)",
-    capLines:"Captions — lines shown at a time", styleTitle:"🎨 Colours & style (click)", sText:"Text colour", sHlMode:"Highlight", sHlBg:"Highlight colour", sHlText:"Highlighted word colour", sOutline:"Outline colour", sOutlineW:"Outline thickness", sSize:"Font size", sPos:"Caption position", sWave:"Waveform colour", sWaveOn:"Waveform", sBg1:"Background colour 1 (no picture)", sBg2:"Background colour 2", sDark:"Darken picture", sReset:"Reset to default", sOffset:"Highlight timing (ms) — if it lags, move left (negative):",
+    autoTitle:"Auto pictures: count and style", autoPics:"🖼️ Make pictures", redo:"Redo", picPlan:"Planning scenes…", picDraw:"Picture", picDone:"✓ Pictures ready — each is shown during its part of the script. Press Redo on any picture to replace it.", picNeedText:"Write the script in the Script box first.", picFail:"picture failed", picCost:"Note: pictures count toward your Google quota/bill.", upReplaces:"(uploaded pictures replace the auto pictures)",
+    advanced:"⚙️ Advanced settings (optional)", capLines:"Captions — lines shown at a time", styleTitle:"🎨 Colours & style (click)", sText:"Text colour", sHlMode:"Highlight", sHlBg:"Highlight colour", sHlText:"Highlighted word colour", sOutline:"Outline colour", sOutlineW:"Outline thickness", sSize:"Font size", sPos:"Caption position", sWave:"Waveform colour", sWaveOn:"Waveform", sBg1:"Background colour 1 (no picture)", sBg2:"Background colour 2", sDark:"Darken picture", sReset:"Reset to default", sOffset:"Highlight timing (ms) — if it lags, move left (negative):",
     hlModes:["Box","Word colour only","Underline","None"], posModes:["Top","Middle","Bottom"], onOff:["Show","Hide"], sample:"یہ ایک نمونہ لائن ہے", vNeedAudio:"👆 First press ▶ Generate above, or upload your own audio file below.", audioSrc:"Or upload your own audio (MP3/WAV/M4A/WhatsApp voice) — put its text in the Script box above for captions", aLoaded:"✓ Audio loaded", aBad:"Could not open this audio file.", aNoText:"Write the audio's text in the Script box above for captions.", vMaking:"Making video… keep this tab open", vDone:"✓ Video ready", vNoSupport:"This browser can't record video — use Chrome.", vWebm:"Note: file is WebM; if WhatsApp rejects it, a recent Chrome (Android/PC) produces MP4.",
   }
 };
@@ -337,23 +340,25 @@ $("key").oninput = () => { if ($("remember").checked) localStorage.setItem("uv_k
 $("clearKey").onclick = () => { $("key").value = ""; localStorage.removeItem("uv_key"); $("remember").checked = false; msg("keyMsg", t("cleared"), "ok"); };
 $("model").onchange = () => localStorage.setItem("uv_model", $("model").value);
 
-$("loadModels").onclick = async () => {
-  if (!$("key").value.trim()) return msg("keyMsg", t("needKey"), "bad");
-  msg("keyMsg", t("testing"));
+async function refreshModels(quiet) {
+  if (!$("key").value.trim()) { if (!quiet) msg("keyMsg", t("needKey"), "bad"); return; }
+  if (!quiet) msg("keyMsg", t("testing"));
   try {
     const r = await fetch(`${API}/models?pageSize=1000`, { headers: { "x-goog-api-key": $("key").value.trim() } });
-    if (!r.ok) return msg("keyMsg", errText(r.status), "bad");
-    const j = await r.json();
-    const tts = (j.models || []).map(m => m.name.replace("models/","")).filter(n => /tts/i.test(n));
-    if (!tts.length) return msg("keyMsg", t("noTtsModels"), "bad");
+    if (!r.ok) { if (!quiet) msg("keyMsg", errText(r.status), "bad"); return; }
+    const j = await r.json(), names = (j.models || []).map(m => m.name.replace("models/",""));
+    localStorage.setItem("uv_all_models", JSON.stringify(names));
+    const tts = names.filter(n => /tts/i.test(n));
+    if (!tts.length) { if (!quiet) msg("keyMsg", t("noTtsModels"), "bad"); return; }
     fillModels(tts); localStorage.setItem("uv_models", JSON.stringify(tts));
-    localStorage.setItem("uv_all_models", JSON.stringify((j.models || []).map(m => m.name.replace("models/",""))));
-    msg("keyMsg", `${t("modelsLoaded")} ${tts.join(", ")}`, "ok");
-  } catch { msg("keyMsg", t("eNet"), "bad"); }
-};
+    if (!quiet) msg("keyMsg", `${t("modelsLoaded")} ${tts.join(", ")}`, "ok");
+  } catch { if (!quiet) msg("keyMsg", t("eNet"), "bad"); }
+}
+$("loadModels").onclick = () => refreshModels(false);
 $("testKey").onclick = async () => {
   if (!$("key").value.trim()) return msg("keyMsg", t("needKey"), "bad");
   msg("keyMsg", t("testing"));
+  await refreshModels(true);
   try { await tts("سلام", undefined); msg("keyMsg", t("keyOk"), "ok"); } catch (e) { msg("keyMsg", e.message, "bad"); }
 };
 
@@ -361,6 +366,7 @@ $("go").onclick = async () => {
   if (!$("key").value.trim()) return msg("genMsg", t("needKey"), "bad");
   const chunks = splitText($("script").value);
   if (!chunks.length) return msg("genMsg", t("needText"), "bad");
+  if (!localStorage.getItem("uv_all_models")) await refreshModels(true);
   abortCtl = new AbortController(); pcmParts = []; partTexts = chunks; wavBlob = null; $("makeVideo").disabled = true; $("vNeedAudio").hidden = false;
   $("go").disabled = true; $("cancel").disabled = false; $("prog").hidden = false; $("prog").max = chunks.length; $("prog").value = 0;
   $("player").hidden = true; $("outBtns").hidden = true;
@@ -712,6 +718,7 @@ function renderThumbs() {
 $("autoPics").onclick = async () => {
   if (!$("key").value.trim()) return msg("pMsg", t("needKey"), "bad");
   if (!sentencesWithWordIdx().length) return msg("pMsg", t("picNeedText"), "bad");
+  if (!localStorage.getItem("uv_all_models")) await refreshModels(true);
   picAbort = new AbortController(); $("autoPics").disabled = true; $("stopPics").disabled = false;
   try {
     msg("pMsg", t("picPlan"));
