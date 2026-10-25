@@ -112,6 +112,8 @@
     <div id="thumbs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-top:8px"></div>
     <label data-t="bgImages"></label>
     <input id="bgFiles" type="file" accept="image/*" multiple>
+    <label data-t="capLines"></label>
+    <select id="capLines"><option value="1" selected>1</option><option value="2">2</option><option value="3">3</option></select>
     <label data-t="videoSize"></label>
     <select id="vSize">
       <option value="720x1280">9:16 (WhatsApp Status / Reels / Shorts)</option>
@@ -151,7 +153,7 @@ const T = {
     videoTitle:"۵۔ کیپشن ویڈیو (تجرباتی)", videoNote:"آپ کی آواز + الفاظ کی ہائی لائٹ والے اردو کیپشن + ویو فارم۔ ویڈیو اصل وقت میں بنتی ہے (۵ منٹ آڈیو = ۵ منٹ)، اس دوران یہ ٹیب کھلا رکھیں۔ الفاظ کا وقت اندازاً ہے۔",
     bgImages:"یا اپنی تصاویر اپ لوڈ کریں (ترتیب سے برابر وقت کے لیے دکھائی جائیں گی)", videoSize:"سائز", makeVideo:"🎬 ویڈیو بنائیں", dlVideo:"ویڈیو ڈاؤن لوڈ",
     autoTitle:"🖼️ خودکار تصاویر — اسی Gemini کی سے، اسکرپٹ کے مناظر کے مطابق (تعداد اور انداز)", autoPics:"🖼️ تصاویر بنائیں", redo:"دوبارہ", picPlan:"مناظر تیار ہو رہے ہیں…", picDraw:"تصویر", picDone:"✓ تصاویر تیار — ہر تصویر اپنے حصے پر دکھائی جائے گی۔ کسی تصویر کو بدلنے کے لیے 'دوبارہ' دبائیں۔", picNeedText:"پہلے اسکرپٹ باکس میں متن لکھیں۔", picFail:"تصویر نہیں بنی", picCost:"نوٹ: تصاویر Google کی حد/بل میں شمار ہوتی ہیں۔", upReplaces:"(اپ لوڈ کی گئی تصاویر خودکار تصاویر کی جگہ لے لیں گی)",
-    vNeedAudio:"👆 پہلے اوپر ▶ آواز بنائیں دبائیں، یا نیچے اپنی آڈیو فائل اپ لوڈ کریں۔", audioSrc:"یا اپنی آڈیو فائل اپ لوڈ کریں (MP3/WAV/M4A/WhatsApp voice) — کیپشن کے لیے اوپر اسکرپٹ میں وہی متن ہونا چاہیے", aLoaded:"✓ آڈیو لوڈ ہو گئی", aBad:"یہ آڈیو فائل نہیں کھل سکی۔", aNoText:"کیپشن کے لیے اوپر اسکرپٹ باکس میں آڈیو کا متن لکھیں۔", vMaking:"ویڈیو بن رہی ہے… ٹیب کھلا رکھیں", vDone:"✓ ویڈیو تیار", vNoSupport:"یہ براؤزر ویڈیو ریکارڈنگ سپورٹ نہیں کرتا — Chrome استعمال کریں۔", vWebm:"نوٹ: فائل WebM ہے؛ WhatsApp کے لیے اگر نہ چلے تو Chrome (Android/PC) کا نیا ورژن MP4 بناتا ہے۔",
+    capLines:"کیپشن — ایک وقت میں کتنی لائنیں", vNeedAudio:"👆 پہلے اوپر ▶ آواز بنائیں دبائیں، یا نیچے اپنی آڈیو فائل اپ لوڈ کریں۔", audioSrc:"یا اپنی آڈیو فائل اپ لوڈ کریں (MP3/WAV/M4A/WhatsApp voice) — کیپشن کے لیے اوپر اسکرپٹ میں وہی متن ہونا چاہیے", aLoaded:"✓ آڈیو لوڈ ہو گئی", aBad:"یہ آڈیو فائل نہیں کھل سکی۔", aNoText:"کیپشن کے لیے اوپر اسکرپٹ باکس میں آڈیو کا متن لکھیں۔", vMaking:"ویڈیو بن رہی ہے… ٹیب کھلا رکھیں", vDone:"✓ ویڈیو تیار", vNoSupport:"یہ براؤزر ویڈیو ریکارڈنگ سپورٹ نہیں کرتا — Chrome استعمال کریں۔", vWebm:"نوٹ: فائل WebM ہے؛ WhatsApp کے لیے اگر نہ چلے تو Chrome (Android/PC) کا نیا ورژن MP4 بناتا ہے۔",
   },
   en: {
     keyTitle:"1. Your Gemini API key", remember:"Remember on this device", testKey:"Test key", clearKey:"Clear key",
@@ -170,7 +172,7 @@ const T = {
     videoTitle:"5. Caption video (experimental)", videoNote:"Your audio + Urdu captions with word highlighting + waveform. Recorded in real time (5 min audio = 5 min), keep this tab open and visible. Word timing is approximate.",
     bgImages:"Or upload your own pictures (shown in order, equal time each)", videoSize:"Size", makeVideo:"🎬 Make video", dlVideo:"Download video",
     autoTitle:"🖼️ Auto pictures — same Gemini key, one per scene of the script (count and style)", autoPics:"🖼️ Make pictures", redo:"Redo", picPlan:"Planning scenes…", picDraw:"Picture", picDone:"✓ Pictures ready — each is shown during its part of the script. Press Redo on any picture to replace it.", picNeedText:"Write the script in the Script box first.", picFail:"picture failed", picCost:"Note: pictures count toward your Google quota/bill.", upReplaces:"(uploaded pictures replace the auto pictures)",
-    vNeedAudio:"👆 First press ▶ Generate above, or upload your own audio file below.", audioSrc:"Or upload your own audio (MP3/WAV/M4A/WhatsApp voice) — put its text in the Script box above for captions", aLoaded:"✓ Audio loaded", aBad:"Could not open this audio file.", aNoText:"Write the audio's text in the Script box above for captions.", vMaking:"Making video… keep this tab open", vDone:"✓ Video ready", vNoSupport:"This browser can't record video — use Chrome.", vWebm:"Note: file is WebM; if WhatsApp rejects it, a recent Chrome (Android/PC) produces MP4.",
+    capLines:"Captions — lines shown at a time", vNeedAudio:"👆 First press ▶ Generate above, or upload your own audio file below.", audioSrc:"Or upload your own audio (MP3/WAV/M4A/WhatsApp voice) — put its text in the Script box above for captions", aLoaded:"✓ Audio loaded", aBad:"Could not open this audio file.", aNoText:"Write the audio's text in the Script box above for captions.", vMaking:"Making video… keep this tab open", vDone:"✓ Video ready", vNoSupport:"This browser can't record video — use Chrome.", vWebm:"Note: file is WebM; if WhatsApp rejects it, a recent Chrome (Android/PC) produces MP4.",
   }
 };
 const OPTS = {
@@ -409,10 +411,10 @@ async function makeVideo() {
   if (!mime || !HTMLCanvasElement.prototype.captureStream) return msg("vMsg", t("vNoSupport"), "bad");
   const [W, H] = $("vSize").value.split("x").map(Number);
   const cv = $("vCanvas"), ctx = cv.getContext("2d"); cv.width = W; cv.height = H;
-  const fontPx = Math.round(Math.min(W, H) * 0.058), font = `${fontPx}px "Noto Nastaliq Urdu"`;
+  const nLines = parseInt($("capLines").value), fontPx = Math.round(Math.min(W, H) * (nLines === 1 ? 0.075 : 0.058)), font = `${fontPx}px "Noto Nastaliq Urdu"`;
   await document.fonts.load(font, "اردو");
   ctx.font = font; ctx.direction = "rtl";
-  const words = wordTimeline(), pages = layoutPages(ctx, words, W * 0.86, H > W ? 4 : 3);
+  const words = wordTimeline(), pages = layoutPages(ctx, words, W * 0.86, nLines);
 
   // audio graph -> recorder (and speakers, so you can hear it)
   const pcm = joinPcm(pcmParts), total = pcm.length / SR;
