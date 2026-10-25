@@ -141,6 +141,8 @@
         <div><label data-t="sBg2"></label><input type="color" id="sBg2" value="#14532d"></div>
       </div>
       <label data-t="sDark"></label><input type="range" id="sDark" min="0" max="85" value="45">
+      <label><span data-t="sOffset"></span> <b id="sOffsetV" class="ltr" style="font-family:inherit">0</b></label>
+      <input type="range" id="sOffset" min="-1000" max="1000" step="50" value="-100">
       <button id="sReset" data-t="sReset"></button>
       <canvas id="sPreview" style="width:100%;max-width:260px;display:block;margin:10px auto 0;border-radius:10px;background:#000"></canvas>
     </details>
@@ -183,7 +185,7 @@ const T = {
     videoTitle:"۵۔ کیپشن ویڈیو (تجرباتی)", videoNote:"آپ کی آواز + الفاظ کی ہائی لائٹ والے اردو کیپشن + ویو فارم۔ ویڈیو اصل وقت میں بنتی ہے (۵ منٹ آڈیو = ۵ منٹ)، اس دوران یہ ٹیب کھلا رکھیں۔ الفاظ کا وقت اندازاً ہے۔",
     bgImages:"یا اپنی تصاویر اپ لوڈ کریں (ترتیب سے برابر وقت کے لیے دکھائی جائیں گی)", videoSize:"سائز", makeVideo:"🎬 ویڈیو بنائیں", dlVideo:"ویڈیو ڈاؤن لوڈ",
     autoTitle:"🖼️ خودکار تصاویر — اسی Gemini کی سے، اسکرپٹ کے مناظر کے مطابق (تعداد اور انداز)", autoPics:"🖼️ تصاویر بنائیں", redo:"دوبارہ", picPlan:"مناظر تیار ہو رہے ہیں…", picDraw:"تصویر", picDone:"✓ تصاویر تیار — ہر تصویر اپنے حصے پر دکھائی جائے گی۔ کسی تصویر کو بدلنے کے لیے 'دوبارہ' دبائیں۔", picNeedText:"پہلے اسکرپٹ باکس میں متن لکھیں۔", picFail:"تصویر نہیں بنی", picCost:"نوٹ: تصاویر Google کی حد/بل میں شمار ہوتی ہیں۔", upReplaces:"(اپ لوڈ کی گئی تصاویر خودکار تصاویر کی جگہ لے لیں گی)",
-    capLines:"کیپشن — ایک وقت میں کتنی لائنیں", styleTitle:"🎨 رنگ اور انداز (کلک کریں)", sText:"متن کا رنگ", sHlMode:"ہائی لائٹ", sHlBg:"ہائی لائٹ کا رنگ", sHlText:"ہائی لائٹ والے لفظ کا رنگ", sOutline:"آؤٹ لائن کا رنگ", sOutlineW:"آؤٹ لائن موٹائی", sSize:"فونٹ سائز", sPos:"کیپشن کی جگہ", sWave:"ویو فارم کا رنگ", sWaveOn:"ویو فارم", sBg1:"پس منظر رنگ ۱ (تصویر نہ ہو تو)", sBg2:"پس منظر رنگ ۲", sDark:"تصویر پر اندھیرا", sReset:"ڈیفالٹ پر واپس",
+    capLines:"کیپشن — ایک وقت میں کتنی لائنیں", styleTitle:"🎨 رنگ اور انداز (کلک کریں)", sText:"متن کا رنگ", sHlMode:"ہائی لائٹ", sHlBg:"ہائی لائٹ کا رنگ", sHlText:"ہائی لائٹ والے لفظ کا رنگ", sOutline:"آؤٹ لائن کا رنگ", sOutlineW:"آؤٹ لائن موٹائی", sSize:"فونٹ سائز", sPos:"کیپشن کی جگہ", sWave:"ویو فارم کا رنگ", sWaveOn:"ویو فارم", sBg1:"پس منظر رنگ ۱ (تصویر نہ ہو تو)", sBg2:"پس منظر رنگ ۲", sDark:"تصویر پر اندھیرا", sReset:"ڈیفالٹ پر واپس", sOffset:"ہائی لائٹ کا وقت (ملی سیکنڈ) — دیر سے لگے تو بائیں (منفی) کریں:",
     hlModes:["ڈبہ","صرف لفظ کا رنگ","انڈر لائن","کوئی نہیں"], posModes:["اوپر","درمیان","نیچے"], onOff:["دکھائیں","چھپائیں"], sample:"یہ ایک نمونہ لائن ہے", vNeedAudio:"👆 پہلے اوپر ▶ آواز بنائیں دبائیں، یا نیچے اپنی آڈیو فائل اپ لوڈ کریں۔", audioSrc:"یا اپنی آڈیو فائل اپ لوڈ کریں (MP3/WAV/M4A/WhatsApp voice) — کیپشن کے لیے اوپر اسکرپٹ میں وہی متن ہونا چاہیے", aLoaded:"✓ آڈیو لوڈ ہو گئی", aBad:"یہ آڈیو فائل نہیں کھل سکی۔", aNoText:"کیپشن کے لیے اوپر اسکرپٹ باکس میں آڈیو کا متن لکھیں۔", vMaking:"ویڈیو بن رہی ہے… ٹیب کھلا رکھیں", vDone:"✓ ویڈیو تیار", vNoSupport:"یہ براؤزر ویڈیو ریکارڈنگ سپورٹ نہیں کرتا — Chrome استعمال کریں۔", vWebm:"نوٹ: فائل WebM ہے؛ WhatsApp کے لیے اگر نہ چلے تو Chrome (Android/PC) کا نیا ورژن MP4 بناتا ہے۔",
   },
   en: {
@@ -203,7 +205,7 @@ const T = {
     videoTitle:"5. Caption video (experimental)", videoNote:"Your audio + Urdu captions with word highlighting + waveform. Recorded in real time (5 min audio = 5 min), keep this tab open and visible. Word timing is approximate.",
     bgImages:"Or upload your own pictures (shown in order, equal time each)", videoSize:"Size", makeVideo:"🎬 Make video", dlVideo:"Download video",
     autoTitle:"🖼️ Auto pictures — same Gemini key, one per scene of the script (count and style)", autoPics:"🖼️ Make pictures", redo:"Redo", picPlan:"Planning scenes…", picDraw:"Picture", picDone:"✓ Pictures ready — each is shown during its part of the script. Press Redo on any picture to replace it.", picNeedText:"Write the script in the Script box first.", picFail:"picture failed", picCost:"Note: pictures count toward your Google quota/bill.", upReplaces:"(uploaded pictures replace the auto pictures)",
-    capLines:"Captions — lines shown at a time", styleTitle:"🎨 Colours & style (click)", sText:"Text colour", sHlMode:"Highlight", sHlBg:"Highlight colour", sHlText:"Highlighted word colour", sOutline:"Outline colour", sOutlineW:"Outline thickness", sSize:"Font size", sPos:"Caption position", sWave:"Waveform colour", sWaveOn:"Waveform", sBg1:"Background colour 1 (no picture)", sBg2:"Background colour 2", sDark:"Darken picture", sReset:"Reset to default",
+    capLines:"Captions — lines shown at a time", styleTitle:"🎨 Colours & style (click)", sText:"Text colour", sHlMode:"Highlight", sHlBg:"Highlight colour", sHlText:"Highlighted word colour", sOutline:"Outline colour", sOutlineW:"Outline thickness", sSize:"Font size", sPos:"Caption position", sWave:"Waveform colour", sWaveOn:"Waveform", sBg1:"Background colour 1 (no picture)", sBg2:"Background colour 2", sDark:"Darken picture", sReset:"Reset to default", sOffset:"Highlight timing (ms) — if it lags, move left (negative):",
     hlModes:["Box","Word colour only","Underline","None"], posModes:["Top","Middle","Bottom"], onOff:["Show","Hide"], sample:"یہ ایک نمونہ لائن ہے", vNeedAudio:"👆 First press ▶ Generate above, or upload your own audio file below.", audioSrc:"Or upload your own audio (MP3/WAV/M4A/WhatsApp voice) — put its text in the Script box above for captions", aLoaded:"✓ Audio loaded", aBad:"Could not open this audio file.", aNoText:"Write the audio's text in the Script box above for captions.", vMaking:"Making video… keep this tab open", vDone:"✓ Video ready", vNoSupport:"This browser can't record video — use Chrome.", vWebm:"Note: file is WebM; if WhatsApp rejects it, a recent Chrome (Android/PC) produces MP4.",
   }
 };
@@ -395,12 +397,39 @@ const GAP = Math.round(SR * 0.3) / SR;
 let vStop = null, videoBlob = null;
 
 // word timeline: each part's audio length is known exactly; inside a part, time is shared by character count
+// map each word to the audio by spreading characters over VOICED time only (pauses and silence get no words)
+function voicedMap(pcm) {
+  const fr = Math.round(SR * 0.02), n = Math.ceil(pcm.length / fr), rms = new Float32Array(n);
+  for (let f = 0; f < n; f++) {
+    let sum = 0, c = 0; for (let i = f * fr; i < Math.min(pcm.length, (f + 1) * fr); i += 4) { sum += pcm[i] * pcm[i]; c++; }
+    rms[f] = Math.sqrt(sum / Math.max(1, c));
+  }
+  const sorted = [...rms].sort((x, y) => x - y), loud = sorted[Math.floor(n * 0.9)] || 1;
+  const thr = Math.max(150, loud * 0.12);
+  // voiced frames; bridge tiny gaps (< 120 ms) so short stops inside words still count as speech
+  const v = Array.from(rms, x => x > thr);
+  for (let f = 0, gap = 0; f < n; f++) { if (!v[f]) gap++; else { if (gap && gap < 6 && f - gap > 0) for (let g = f - gap; g < f; g++) v[g] = true; gap = 0; } }
+  const cum = new Float32Array(n + 1); for (let f = 0; f < n; f++) cum[f + 1] = cum[f] + (v[f] ? 1 : 0);
+  const voiced = cum[n];
+  if (voiced < 5) return q => q * pcm.length / SR;               // no clear speech: fall back to even spread
+  return q => {                                                    // q in 0..1 of speech -> seconds
+    const target = q * voiced; let lo = 0, hi = n;
+    while (lo < hi) { const m = (lo + hi) >> 1; if (cum[m + 1] < target) lo = m + 1; else hi = m; }
+    return lo * fr / SR;
+  };
+}
 function wordTimeline() {
   const words = []; let t0 = 0;
+  const off = +(($("sOffset") || {}).value || 0) / 1000;
   pcmParts.forEach((pcm, i) => {
-    const dur = pcm.length / SR, ws = partTexts[i].split(/\s+/).filter(Boolean);
-    const total = ws.reduce((n, w) => n + w.length + 1, 0); let acc = 0;
-    ws.forEach(w => { const s = t0 + dur * acc / total; acc += w.length + 1; words.push({ w, s, e: t0 + dur * acc / total, part: i }); });
+    const dur = pcm.length / SR, ws = (partTexts[i] || "").split(/\s+/).filter(Boolean), at = voicedMap(pcm);
+    // weight = letters + a little extra after punctuation (speakers slow down there)
+    const wt = ws.map(w => w.length + 1 + (/[۔.!؟?…،,]$/.test(w) ? 2 : 0)), total = wt.reduce((a, b) => a + b, 0);
+    let acc = 0;
+    ws.forEach((w, k) => {
+      const s0 = at(acc / total); acc += wt[k]; const e0 = at(acc / total);
+      words.push({ w, s: Math.max(0, t0 + s0 + off), e: Math.max(0, t0 + Math.max(e0, s0 + 0.05) + off), part: i });
+    });
     t0 += dur + GAP;
   });
   return words;
@@ -525,8 +554,8 @@ $("shareVideo").onclick = async () => {
 };
 
 // ---- caption style ----
-const STYLE_IDS = ["sText","sHlMode","sHlBg","sHlText","sOutline","sOutlineW","sSize","sPos","sWave","sWaveOn","sBg1","sBg2","sDark"];
-const STYLE_DEF = { sText:"#ffffff", sHlMode:"0", sHlBg:"#22c55e", sHlText:"#052e14", sOutline:"#000000", sOutlineW:"0", sSize:"100", sPos:"1",
+const STYLE_IDS = ["sOffset","sText","sHlMode","sHlBg","sHlText","sOutline","sOutlineW","sSize","sPos","sWave","sWaveOn","sBg1","sBg2","sDark"];
+const STYLE_DEF = { sOffset:"-100", sText:"#ffffff", sHlMode:"0", sHlBg:"#22c55e", sHlText:"#052e14", sOutline:"#000000", sOutlineW:"0", sSize:"100", sPos:"1",
                     sWave:"#22c55e", sWaveOn:"0", sBg1:"#0f172a", sBg2:"#14532d", sDark:"45" };
 function getStyle() {
   const v = id => $(id).value;
@@ -539,8 +568,8 @@ function fillStyleSelects() {
     el.innerHTML = t(key).map((x, i) => `<option value="${i}">${x}</option>`).join(""); el.value = cur;
   }
 }
-function saveStyle() { localStorage.setItem("uv_style", JSON.stringify(Object.fromEntries(STYLE_IDS.map(id => [id, $(id).value])))); drawPreview(); }
-function loadStyle() { const sv = JSON.parse(localStorage.getItem("uv_style") || "{}"); STYLE_IDS.forEach(id => $(id).value = sv[id] ?? STYLE_DEF[id]); }
+function saveStyle() { $("sOffsetV").textContent = $("sOffset").value; localStorage.setItem("uv_style", JSON.stringify(Object.fromEntries(STYLE_IDS.map(id => [id, $(id).value])))); drawPreview(); }
+function loadStyle() { const sv = JSON.parse(localStorage.getItem("uv_style") || "{}"); STYLE_IDS.forEach(id => $(id).value = sv[id] ?? STYLE_DEF[id]); $("sOffsetV").textContent = $("sOffset").value; }
 function hexA(hex, a) { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; }
 
 // one video frame (also used for the style preview)
