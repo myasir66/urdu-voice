@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Urdu Voice</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Montserrat:wght@600;800&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#0f172a; --card:#1e293b; --fg:#e2e8f0; --mut:#94a3b8; --acc:#22c55e; --err:#f87171; --bd:#334155; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font-family:'Noto Nastaliq Urdu', 'Segoe UI', sans-serif; line-height:2; }
+  body.en { font-family:'Segoe UI', Roboto, sans-serif; line-height:1.5; }
+  .wrap { max-width:760px; margin:auto; padding:16px; }
+  header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+  .logo { font-family:Montserrat, sans-serif; font-weight:800; font-size:26px; direction:ltr; }
+  .logo span { color:var(--acc); }
+  .card { background:var(--card); border:1px solid var(--bd); border-radius:14px; padding:14px 16px; margin:12px 0; }
+  h2 { margin:0 0 6px; font-size:18px; }
+  label { display:block; color:var(--mut); font-size:14px; margin-top:8px; }
+  input, select, textarea, button { font:inherit; color:var(--fg); }
+  input, select, textarea { width:100%; background:#0b1220; border:1px solid var(--bd); border-radius:10px; padding:8px 10px; }
+  textarea { min-height:220px; font-size:19px; line-height:2.3; resize:vertical; }
+  input[type=password], .ltr { direction:ltr; text-align:left; font-family:monospace; }
+  button { background:#334155; border:0; border-radius:10px; padding:8px 14px; margin:6px 0 0 6px; cursor:pointer; }
+  button.pri { background:var(--acc); color:#052e14; font-weight:700; }
+  button:disabled { opacity:.5; cursor:not-allowed; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; } .row > * { flex:1 1 160px; }
+  .mut { color:var(--mut); font-size:13px; }
+  .msg { margin-top:8px; font-size:15px; } .ok { color:var(--acc); } .bad { color:var(--err); }
+  progress { width:100%; height:14px; }
+  audio { width:100%; margin-top:8px; }
+  a { color:#60a5fa; }
+  .chk { display:flex; align-items:center; gap:6px; } .chk input { width:auto; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">Urdu <span>Ai</span> Voice</div>
+    <button id="langBtn">English</button>
+  </header>
+
+  <!-- 1. API key -->
+  <div class="card">
+    <h2 data-t="keyTitle"></h2>
+    <input id="key" type="password" autocomplete="off" placeholder="AIza...">
+    <label class="chk"><input type="checkbox" id="remember"> <span data-t="remember"></span></label>
+    <button id="testKey" data-t="testKey"></button>
+    <button id="clearKey" data-t="clearKey"></button>
+    <div class="mut"><a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" data-t="getKey"></a> · <span data-t="keyNote"></span></div>
+    <label data-t="model"></label>
+    <div class="row">
+      <select id="model" class="ltr"></select>
+      <button id="loadModels" data-t="loadModels" style="flex:0 0 auto"></button>
+    </div>
+    <div id="keyMsg" class="msg"></div>
+  </div>
+
+  <!-- 2. Script -->
+  <div class="card">
+    <h2 data-t="scriptTitle"></h2>
+    <textarea id="script" dir="rtl"></textarea>
+    <div class="mut" id="stats"></div>
+    <button id="audition" data-t="audition"></button>
+  </div>
+
+  <!-- 3. Voice & style -->
+  <div class="card">
+    <h2 data-t="voiceTitle"></h2>
+    <div class="row">
+      <div><label data-t="voice"></label><select id="voice" class="ltr"></select></div>
+      <div><label data-t="expr"></label><select id="expr"></select></div>
+    </div>
+    <div class="row">
+      <div><label data-t="pace"></label><select id="pace"></select></div>
+      <div><label data-t="accent"></label><select id="accent"></select></div>
+    </div>
+    <label data-t="direction"></label>
+    <input id="direction" data-tp="directionPh">
+  </div>
+
+  <!-- 4. Generate -->
+  <div class="card">
+    <button id="go" class="pri" data-t="go"></button>
+    <button id="cancel" data-t="cancel" disabled></button>
+    <progress id="prog" value="0" max="1" hidden></progress>
+    <div id="genMsg" class="msg"></div>
+    <audio id="player" controls hidden></audio>
+    <div id="outBtns" hidden>
+      <button id="dlWav" data-t="dlWav"></button>
+      <button id="dlMp3" data-t="dlMp3"></button>
+      <button id="share" data-t="share"></button>
+    </div>
+    <div class="mut" data-t="shareNote"></div>
+  </div>
+
+  <div class="mut" data-t="footer"></div>
+</div>
+
+<script>
+const T = {
+  ur: {
+    keyTitle:"۱۔ اپنی Gemini API کی", remember:"اس ڈیوائس پر محفوظ رکھیں", testKey:"کی ٹیسٹ کریں", clearKey:"کی صاف کریں",
+    getKey:"Google AI Studio سے کی بنائیں", keyNote:"کی صرف Google کو جاتی ہے، کہیں اور نہیں۔", model:"ماڈل", loadModels:"ماڈل لوڈ کریں",
+    scriptTitle:"۲۔ اسکرپٹ", audition:"آزمائشی جملہ ڈالیں", voiceTitle:"۳۔ آواز اور انداز", voice:"آواز", expr:"تاثر", pace:"رفتار", accent:"لہجہ",
+    direction:"مزید ہدایت (اختیاری)", directionPh:"مثلاً: کہانی سنانے والے انداز میں، اہم جملوں پر زور دیں",
+    go:"▶ آواز بنائیں", cancel:"روکیں", dlWav:"WAV ڈاؤن لوڈ", dlMp3:"MP3 ڈاؤن لوڈ", share:"شیئر کریں (WhatsApp)",
+    shareNote:"ایپ کا لنک نہیں، آڈیو فائل شیئر کریں۔ iPhone: شیئر → Save to Files۔ Android: ڈاؤن لوڈ فولڈر میں ملے گی۔",
+    footer:"نوٹ: Google کی زبانوں کی فہرست میں اردو شامل نہیں، اس لیے تلفظ کی ضمانت نہیں — پہلے مختصر جملہ سن کر جانچیں۔ مفت حد Google پروجیکٹ کے حساب سے ہے، لامحدود نہیں۔",
+    chars:"حروف", parts:"حصے", est:"اندازاً دورانیہ", min:"منٹ", sec:"سیکنڈ",
+    needKey:"پہلے API کی ڈالیں۔", needText:"پہلے اسکرپٹ لکھیں۔", keyOk:"✓ کی درست ہے۔", testing:"جانچ ہو رہی ہے…",
+    modelsLoaded:"TTS ماڈل لوڈ ہو گئے:", noTtsModels:"اس کی پر کوئی TTS ماڈل نہیں ملا۔", cleared:"کی اس ڈیوائس سے ہٹا دی گئی (Google میں کی ابھی بھی فعال ہے، وہاں سے حذف کریں)۔",
+    part:"حصہ", of:"از", retry:"دوبارہ کوشش", done:"✓ مکمل", duration:"دورانیہ", size:"سائز", cancelled:"روک دیا گیا۔", mp3Wait:"MP3 بن رہا ہے…",
+    e400:"درخواست غلط ہے (400) — ماڈل کا نام یا متن چیک کریں۔", e401:"کی غلط ہے یا اجازت نہیں (401/403)۔", e404:"یہ ماڈل موجود نہیں (404) — 'ماڈل لوڈ کریں' دبائیں۔",
+    e429:"حد ختم (429) — کچھ دیر بعد کوشش کریں یا Google AI Studio میں حد دیکھیں۔", eNet:"انٹرنیٹ یا سرور کا مسئلہ۔", eNoAudio:"جواب میں آڈیو نہیں آیا۔",
+  },
+  en: {
+    keyTitle:"1. Your Gemini API key", remember:"Remember on this device", testKey:"Test key", clearKey:"Clear key",
+    getKey:"Create a key in Google AI Studio", keyNote:"The key is sent only to Google.", model:"Model", loadModels:"Load models",
+    scriptTitle:"2. Script", audition:"Insert audition sentence", voiceTitle:"3. Voice & style", voice:"Voice", expr:"Expression", pace:"Pace", accent:"Accent",
+    direction:"Extra direction (optional)", directionPh:"e.g. storyteller style, stress the key lines",
+    go:"▶ Generate", cancel:"Cancel", dlWav:"Download WAV", dlMp3:"Download MP3", share:"Share (WhatsApp)",
+    shareNote:"Share the audio file, not an app link. iPhone: Share → Save to Files. Android: it goes to Downloads.",
+    footer:"Note: Urdu is not in Google's TTS language list, so pronunciation is not guaranteed — listen to a short test first. Free quota is per Google project, not unlimited.",
+    chars:"chars", parts:"parts", est:"est. length", min:"min", sec:"s",
+    needKey:"Enter an API key first.", needText:"Write a script first.", keyOk:"✓ Key works.", testing:"Testing…",
+    modelsLoaded:"TTS models loaded:", noTtsModels:"No TTS models found for this key.", cleared:"Key removed from this device (still active at Google — delete it there to revoke).",
+    part:"Part", of:"of", retry:"retrying", done:"✓ Done", duration:"Length", size:"Size", cancelled:"Cancelled.", mp3Wait:"Encoding MP3…",
+    e400:"Bad request (400) — check the model name or text.", e401:"Invalid key or no permission (401/403).", e404:"Model not found (404) — press 'Load models'.",
+    e429:"Quota exceeded (429) — wait and retry, or check limits in Google AI Studio.", eNet:"Network or server problem.", eNoAudio:"No audio in the response.",
+  }
+};
+const OPTS = {
+  expr: { ur:["عام","گرمجوش","پُرجوش","سنجیدہ","کہانی گو","خبریں"], en:["Neutral","Warm","Excited","Serious","Storyteller","Newsreader"],
+          p:["", "in a warm, friendly tone", "with excitement and energy", "in a serious, calm tone", "like an engaging storyteller", "like a professional news anchor"] },
+  pace: { ur:["عام","آہستہ","تیز"], en:["Normal","Slow","Fast"], p:["", "slowly and clearly", "at a brisk pace"] },
+  accent:{ ur:["پاکستانی اردو","لکھنوی / ادبی","عام"], en:["Pakistani Urdu","Lucknowi / literary","Default"],
+          p:["with a natural Pakistani Urdu accent", "with a refined literary Urdu (Lucknowi) accent", ""] },
+};
+const VOICES = ["Kore","Zephyr","Puck","Charon","Fenrir","Leda","Orus","Aoede","Callirrhoe","Autonoe","Enceladus","Iapetus","Umbriel","Algieba",
+  "Despina","Erinome","Algenib","Rasalgethi","Laomedeia","Achernar","Alnilam","Schedar","Gacrux","Pulcherrima","Achird","Zubenelgenubi",
+  "Vindemiatrix","Sadachbia","Sadaltager","Sulafat"];
+const DEFAULT_MODELS = ["gemini-2.5-flash-preview-tts","gemini-2.5-pro-preview-tts"];
+const AUDITION = "السلام علیکم! آج ہم اردو میں اپنا پہلا وائس اوور بنا رہے ہیں۔";
+const API = "https://generativelanguage.googleapis.com/v1beta";
+const SR = 24000, CHUNK = 900;
+
+const $ = id => document.getElementById(id);
+let lang = "ur", pcmParts = [], wavBlob = null, abortCtl = null;
+const t = k => T[lang][k];
+
+function applyLang() {
+  document.documentElement.lang = lang; document.documentElement.dir = lang === "ur" ? "rtl" : "ltr";
+  document.body.classList.toggle("en", lang === "en");
+  document.querySelectorAll("[data-t]").forEach(e => e.textContent = t(e.dataset.t));
+  document.querySelectorAll("[data-tp]").forEach(e => e.placeholder = t(e.dataset.tp));
+  $("langBtn").textContent = lang === "ur" ? "English" : "اردو";
+  for (const k of ["expr","pace","accent"]) {
+    const s = $(k), v = s.selectedIndex;
+    s.innerHTML = OPTS[k][lang].map((x,i) => `<option value="${i}">${x}</option>`).join("");
+    s.selectedIndex = Math.max(0, v);
+  }
+  updateStats();
+}
+function fillModels(list) {
+  const cur = $("model").value || localStorage.getItem("uv_model");
+  $("model").innerHTML = list.map(m => `<option>${m}</option>`).join("");
+  if (cur && list.includes(cur)) $("model").value = cur;
+}
+function msg(el, text, cls) { $(el).textContent = text; $(el).className = "msg " + (cls || ""); }
+
+// ---- chunking at sentence boundaries ----
+function splitText(text) {
+  const sents = text.replace(/\r/g, "").split(/(?<=[۔.!؟?…])\s+|\n+/).map(s => s.trim()).filter(s => s && !/^[.\s۔]+$/.test(s));
+  const out = []; let cur = "";
+  for (const s of sents) {
+    if (cur && cur.length + s.length + 1 > CHUNK) { out.push(cur); cur = s; } else cur = cur ? cur + " " + s : s;
+  }
+  if (cur) out.push(cur);
+  return out;
+}
+function updateStats() {
+  const txt = $("script").value, n = txt.trim().length;
+  const secs = Math.round(n / 13);   // rough: ~13 Urdu chars per second
+  $("stats").textContent = `${n} ${t("chars")} · ${splitText(txt).length} ${t("parts")} · ${t("est")} ~${secs >= 60 ? (secs/60).toFixed(1)+" "+t("min") : secs+" "+t("sec")}`;
+}
+
+// ---- API ----
+function errText(status) {
+  if (status === 400) return t("e400"); if (status === 401 || status === 403) return t("e401");
+  if (status === 404) return t("e404"); if (status === 429) return t("e429"); return t("eNet") + (status ? ` (${status})` : "");
+}
+function styleLine() {
+  const bits = [OPTS.accent.p[$("accent").value], OPTS.expr.p[$("expr").value], OPTS.pace.p[$("pace").value], $("direction").value.trim()].filter(Boolean);
+  return "Read the following Urdu text aloud" + (bits.length ? " " + bits.join(", ") : "") + ". Do not read these instructions:\n\n";
+}
+async function tts(text, signal) {
+  const body = {
+    contents: [{ parts: [{ text: styleLine() + text }] }],
+    generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: $("voice").value } } } }
+  };
+  for (let attempt = 0; ; attempt++) {
+    let r;
+    try {
+      r = await fetch(`${API}/models/${$("model").value}:generateContent`, {
+        method: "POST", signal, headers: { "Content-Type": "application/json", "x-goog-api-key": $("key").value.trim() }, body: JSON.stringify(body) });
+    } catch (e) { if (e.name === "AbortError") throw e; if (attempt < 3) { await sleep(2000 * 2 ** attempt, signal); continue; } throw new Error(t("eNet")); }
+    if (r.ok) {
+      const j = await r.json();
+      const part = j.candidates?.[0]?.content?.parts?.find(p => p.inlineData?.data);
+      if (!part) throw new Error(t("eNoAudio"));
+      const bin = atob(part.inlineData.data), u8 = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+      return new Int16Array(u8.buffer, 0, u8.length >> 1);
+    }
+    if ((r.status === 429 || r.status >= 500) && attempt < 3) { await sleep(5000 * 2 ** attempt, signal); continue; }
+    throw new Error(errText(r.status));
+  }
+}
+const sleep = (ms, signal) => new Promise((res, rej) => {
+  const id = setTimeout(res, ms); signal?.addEventListener("abort", () => { clearTimeout(id); rej(new DOMException("", "AbortError")); });
+});
+
+// ---- audio building ----
+function joinPcm(parts) {
+  const gap = new Int16Array(Math.round(SR * 0.3));
+  const total = parts.reduce((n, p) => n + p.length + gap.length, 0), out = new Int16Array(total);
+  let o = 0; for (const p of parts) { out.set(p, o); o += p.length + gap.length; }
+  return out;
+}
+function wav(pcm) {
+  const buf = new ArrayBuffer(44 + pcm.length * 2), v = new DataView(buf);
+  const w = (o, s) => [...s].forEach((c, i) => v.setUint8(o + i, c.charCodeAt(0)));
+  w(0,"RIFF"); v.setUint32(4, 36 + pcm.length*2, true); w(8,"WAVE"); w(12,"fmt "); v.setUint32(16,16,true); v.setUint16(20,1,true);
+  v.setUint16(22,1,true); v.setUint32(24,SR,true); v.setUint32(28,SR*2,true); v.setUint16(32,2,true); v.setUint16(34,16,true);
+  w(36,"data"); v.setUint32(40, pcm.length*2, true); new Int16Array(buf, 44).set(pcm);
+  return new Blob([buf], { type: "audio/wav" });
+}
+function loadScript(src) { return new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); }
+async function mp3Blob() {
+  if (!window.lamejs) await loadScript("https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js");
+  const pcm = joinPcm(pcmParts), enc = new lamejs.Mp3Encoder(1, SR, 128), out = [];
+  for (let i = 0; i < pcm.length; i += 1152) { const b = enc.encodeBuffer(pcm.subarray(i, i + 1152)); if (b.length) out.push(new Uint8Array(b)); }
+  const e = enc.flush(); if (e.length) out.push(new Uint8Array(e));
+  return new Blob(out, { type: "audio/mpeg" });
+}
+function fname(ext) { return `urdu_voice_${new Date().toISOString().slice(0,19).replace(/[-:T]/g,"")}.${ext}`; }
+function download(blob, name) { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 5000); }
+
+// ---- events ----
+$("langBtn").onclick = () => { lang = lang === "ur" ? "en" : "ur"; localStorage.setItem("uv_lang", lang); applyLang(); };
+$("script").oninput = updateStats;
+$("audition").onclick = () => { $("script").value = AUDITION; updateStats(); };
+$("remember").onchange = () => { if ($("remember").checked) localStorage.setItem("uv_key", $("key").value.trim()); else localStorage.removeItem("uv_key"); };
+$("key").oninput = () => { if ($("remember").checked) localStorage.setItem("uv_key", $("key").value.trim()); };
+$("clearKey").onclick = () => { $("key").value = ""; localStorage.removeItem("uv_key"); $("remember").checked = false; msg("keyMsg", t("cleared"), "ok"); };
+$("model").onchange = () => localStorage.setItem("uv_model", $("model").value);
+
+$("loadModels").onclick = async () => {
+  if (!$("key").value.trim()) return msg("keyMsg", t("needKey"), "bad");
+  msg("keyMsg", t("testing"));
+  try {
+    const r = await fetch(`${API}/models?pageSize=1000`, { headers: { "x-goog-api-key": $("key").value.trim() } });
+    if (!r.ok) return msg("keyMsg", errText(r.status), "bad");
+    const j = await r.json();
+    const tts = (j.models || []).map(m => m.name.replace("models/","")).filter(n => /tts/i.test(n));
+    if (!tts.length) return msg("keyMsg", t("noTtsModels"), "bad");
+    fillModels(tts); localStorage.setItem("uv_models", JSON.stringify(tts));
+    msg("keyMsg", `${t("modelsLoaded")} ${tts.join(", ")}`, "ok");
+  } catch { msg("keyMsg", t("eNet"), "bad"); }
+};
+$("testKey").onclick = async () => {
+  if (!$("key").value.trim()) return msg("keyMsg", t("needKey"), "bad");
+  msg("keyMsg", t("testing"));
+  try { await tts("سلام", undefined); msg("keyMsg", t("keyOk"), "ok"); } catch (e) { msg("keyMsg", e.message, "bad"); }
+};
+
+$("go").onclick = async () => {
+  if (!$("key").value.trim()) return msg("genMsg", t("needKey"), "bad");
+  const chunks = splitText($("script").value);
+  if (!chunks.length) return msg("genMsg", t("needText"), "bad");
+  abortCtl = new AbortController(); pcmParts = []; wavBlob = null;
+  $("go").disabled = true; $("cancel").disabled = false; $("prog").hidden = false; $("prog").max = chunks.length; $("prog").value = 0;
+  $("player").hidden = true; $("outBtns").hidden = true;
+  try {
+    for (let i = 0; i < chunks.length; i++) {
+      msg("genMsg", `${t("part")} ${i+1} ${t("of")} ${chunks.length}…`);
+      pcmParts.push(await tts(chunks[i], abortCtl.signal));
+      $("prog").value = i + 1;
+    }
+    wavBlob = wav(joinPcm(pcmParts));
+    $("player").src = URL.createObjectURL(wavBlob); $("player").hidden = false; $("outBtns").hidden = false;
+    const secs = (wavBlob.size - 44) / 2 / SR;
+    msg("genMsg", `${t("done")} · ${t("duration")} ${Math.floor(secs/60)}:${String(Math.round(secs%60)).padStart(2,"0")} · ${t("size")} ${(wavBlob.size/1048576).toFixed(1)} MB`, "ok");
+  } catch (e) {
+    msg("genMsg", e.name === "AbortError" ? t("cancelled") : `${t("part")} ${pcmParts.length+1}: ${e.message}`, "bad");
+  } finally { $("go").disabled = false; $("cancel").disabled = true; }
+};
+$("cancel").onclick = () => abortCtl?.abort();
+$("dlWav").onclick = () => wavBlob && download(wavBlob, fname("wav"));
+$("dlMp3").onclick = async () => {
+  if (!pcmParts.length) return; msg("genMsg", t("mp3Wait"));
+  try { download(await mp3Blob(), fname("mp3")); msg("genMsg", t("done"), "ok"); } catch { msg("genMsg", t("eNet"), "bad"); }
+};
+$("share").onclick = async () => {
+  if (!pcmParts.length) return;
+  let blob; try { blob = await mp3Blob(); } catch { blob = wavBlob; }
+  const file = new File([blob], fname(blob.type === "audio/mpeg" ? "mp3" : "wav"), { type: blob.type });
+  if (navigator.canShare?.({ files: [file] })) { try { await navigator.share({ files: [file], title: "Urdu Voice" }); } catch {} }
+  else download(blob, file.name);
+};
+
+// ---- init ----
+$("voice").innerHTML = VOICES.map(v => `<option>${v}</option>`).join("");
+fillModels(JSON.parse(localStorage.getItem("uv_models") || "null") || DEFAULT_MODELS);
+const saved = localStorage.getItem("uv_key"); if (saved) { $("key").value = saved; $("remember").checked = true; }
+lang = localStorage.getItem("uv_lang") || "ur";
+applyLang();
+</script>
+</body>
+</html>
