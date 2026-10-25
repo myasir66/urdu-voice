@@ -95,7 +95,7 @@
   </div>
 
   <!-- 5. Caption video (experimental) -->
-  <div class="card" id="videoCard" hidden>
+  <div class="card" id="videoCard">
     <h2 data-t="videoTitle"></h2>
     <div class="mut" data-t="videoNote"></div>
     <label data-t="bgImages"></label>
@@ -106,7 +106,8 @@
       <option value="1280x720">16:9 (YouTube)</option>
       <option value="1080x1080">1:1</option>
     </select>
-    <button id="makeVideo" class="pri" data-t="makeVideo"></button>
+    <button id="makeVideo" class="pri" data-t="makeVideo" disabled></button>
+    <div id="vNeedAudio" class="mut" data-t="vNeedAudio"></div>
     <button id="stopVideo" data-t="cancel" disabled></button>
     <progress id="vProg" value="0" max="1" hidden></progress>
     <div id="vMsg" class="msg"></div>
@@ -137,7 +138,7 @@ const T = {
     e429:"حد ختم (429) — کچھ دیر بعد کوشش کریں یا Google AI Studio میں حد دیکھیں۔", eNet:"انٹرنیٹ یا سرور کا مسئلہ۔", eNoAudio:"جواب میں آڈیو نہیں آیا۔",
     videoTitle:"۵۔ کیپشن ویڈیو (تجرباتی)", videoNote:"آپ کی آواز + الفاظ کی ہائی لائٹ والے اردو کیپشن + ویو فارم۔ ویڈیو اصل وقت میں بنتی ہے (۵ منٹ آڈیو = ۵ منٹ)، اس دوران یہ ٹیب کھلا رکھیں۔ الفاظ کا وقت اندازاً ہے۔",
     bgImages:"پس منظر تصاویر (اختیاری، مثلاً ChatGPT سے بنی ہوئی — ترتیب سے دکھائی جائیں گی)", videoSize:"سائز", makeVideo:"🎬 ویڈیو بنائیں", dlVideo:"ویڈیو ڈاؤن لوڈ",
-    vMaking:"ویڈیو بن رہی ہے… ٹیب کھلا رکھیں", vDone:"✓ ویڈیو تیار", vNoSupport:"یہ براؤزر ویڈیو ریکارڈنگ سپورٹ نہیں کرتا — Chrome استعمال کریں۔", vWebm:"نوٹ: فائل WebM ہے؛ WhatsApp کے لیے اگر نہ چلے تو Chrome (Android/PC) کا نیا ورژن MP4 بناتا ہے۔",
+    vNeedAudio:"👆 پہلے اوپر ▶ آواز بنائیں دبائیں، پھر یہاں ویڈیو بنائیں۔", vMaking:"ویڈیو بن رہی ہے… ٹیب کھلا رکھیں", vDone:"✓ ویڈیو تیار", vNoSupport:"یہ براؤزر ویڈیو ریکارڈنگ سپورٹ نہیں کرتا — Chrome استعمال کریں۔", vWebm:"نوٹ: فائل WebM ہے؛ WhatsApp کے لیے اگر نہ چلے تو Chrome (Android/PC) کا نیا ورژن MP4 بناتا ہے۔",
   },
   en: {
     keyTitle:"1. Your Gemini API key", remember:"Remember on this device", testKey:"Test key", clearKey:"Clear key",
@@ -155,7 +156,7 @@ const T = {
     e429:"Quota exceeded (429) — wait and retry, or check limits in Google AI Studio.", eNet:"Network or server problem.", eNoAudio:"No audio in the response.",
     videoTitle:"5. Caption video (experimental)", videoNote:"Your audio + Urdu captions with word highlighting + waveform. Recorded in real time (5 min audio = 5 min), keep this tab open and visible. Word timing is approximate.",
     bgImages:"Background pictures (optional, e.g. made with ChatGPT — shown in order)", videoSize:"Size", makeVideo:"🎬 Make video", dlVideo:"Download video",
-    vMaking:"Making video… keep this tab open", vDone:"✓ Video ready", vNoSupport:"This browser can't record video — use Chrome.", vWebm:"Note: file is WebM; if WhatsApp rejects it, a recent Chrome (Android/PC) produces MP4.",
+    vNeedAudio:"👆 First press ▶ Generate above, then make the video here.", vMaking:"Making video… keep this tab open", vDone:"✓ Video ready", vNoSupport:"This browser can't record video — use Chrome.", vWebm:"Note: file is WebM; if WhatsApp rejects it, a recent Chrome (Android/PC) produces MP4.",
   }
 };
 const OPTS = {
@@ -307,7 +308,7 @@ $("go").onclick = async () => {
   if (!$("key").value.trim()) return msg("genMsg", t("needKey"), "bad");
   const chunks = splitText($("script").value);
   if (!chunks.length) return msg("genMsg", t("needText"), "bad");
-  abortCtl = new AbortController(); pcmParts = []; partTexts = chunks; wavBlob = null; $("videoCard").hidden = true;
+  abortCtl = new AbortController(); pcmParts = []; partTexts = chunks; wavBlob = null; $("makeVideo").disabled = true; $("vNeedAudio").hidden = false;
   $("go").disabled = true; $("cancel").disabled = false; $("prog").hidden = false; $("prog").max = chunks.length; $("prog").value = 0;
   $("player").hidden = true; $("outBtns").hidden = true;
   try {
@@ -317,7 +318,7 @@ $("go").onclick = async () => {
       $("prog").value = i + 1;
     }
     wavBlob = wav(joinPcm(pcmParts));
-    $("player").src = URL.createObjectURL(wavBlob); $("player").hidden = false; $("outBtns").hidden = false; $("videoCard").hidden = false;
+    $("player").src = URL.createObjectURL(wavBlob); $("player").hidden = false; $("outBtns").hidden = false; $("makeVideo").disabled = false; $("vNeedAudio").hidden = true;
     const secs = (wavBlob.size - 44) / 2 / SR;
     msg("genMsg", `${t("done")} · ${t("duration")} ${Math.floor(secs/60)}:${String(Math.round(secs%60)).padStart(2,"0")} · ${t("size")} ${(wavBlob.size/1048576).toFixed(1)} MB`, "ok");
   } catch (e) {
