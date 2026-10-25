@@ -94,6 +94,28 @@
     <div class="mut" data-t="shareNote"></div>
   </div>
 
+  <!-- 5. Caption video (experimental) -->
+  <div class="card" id="videoCard" hidden>
+    <h2 data-t="videoTitle"></h2>
+    <div class="mut" data-t="videoNote"></div>
+    <label data-t="bgImages"></label>
+    <input id="bgFiles" type="file" accept="image/*" multiple>
+    <label data-t="videoSize"></label>
+    <select id="vSize">
+      <option value="720x1280">9:16 (WhatsApp Status / Reels / Shorts)</option>
+      <option value="1280x720">16:9 (YouTube)</option>
+      <option value="1080x1080">1:1</option>
+    </select>
+    <button id="makeVideo" class="pri" data-t="makeVideo"></button>
+    <button id="stopVideo" data-t="cancel" disabled></button>
+    <progress id="vProg" value="0" max="1" hidden></progress>
+    <div id="vMsg" class="msg"></div>
+    <canvas id="vCanvas" style="width:100%;max-height:60vh;object-fit:contain;margin-top:8px;border-radius:10px;background:#000" hidden></canvas>
+    <video id="vOut" controls playsinline style="width:100%;max-height:60vh;margin-top:8px" hidden></video>
+    <button id="dlVideo" data-t="dlVideo" hidden></button>
+    <button id="shareVideo" data-t="share" hidden></button>
+  </div>
+
   <div class="mut" data-t="footer"></div>
 </div>
 
@@ -113,6 +135,9 @@ const T = {
     part:"حصہ", of:"از", retry:"دوبارہ کوشش", done:"✓ مکمل", duration:"دورانیہ", size:"سائز", cancelled:"روک دیا گیا۔", mp3Wait:"MP3 بن رہا ہے…",
     e400:"درخواست غلط ہے (400) — ماڈل کا نام یا متن چیک کریں۔", e401:"کی غلط ہے یا اجازت نہیں (401/403)۔", e404:"یہ ماڈل موجود نہیں (404) — 'ماڈل لوڈ کریں' دبائیں۔",
     e429:"حد ختم (429) — کچھ دیر بعد کوشش کریں یا Google AI Studio میں حد دیکھیں۔", eNet:"انٹرنیٹ یا سرور کا مسئلہ۔", eNoAudio:"جواب میں آڈیو نہیں آیا۔",
+    videoTitle:"۵۔ کیپشن ویڈیو (تجرباتی)", videoNote:"آپ کی آواز + الفاظ کی ہائی لائٹ والے اردو کیپشن + ویو فارم۔ ویڈیو اصل وقت میں بنتی ہے (۵ منٹ آڈیو = ۵ منٹ)، اس دوران یہ ٹیب کھلا رکھیں۔ الفاظ کا وقت اندازاً ہے۔",
+    bgImages:"پس منظر تصاویر (اختیاری، مثلاً ChatGPT سے بنی ہوئی — ترتیب سے دکھائی جائیں گی)", videoSize:"سائز", makeVideo:"🎬 ویڈیو بنائیں", dlVideo:"ویڈیو ڈاؤن لوڈ",
+    vMaking:"ویڈیو بن رہی ہے… ٹیب کھلا رکھیں", vDone:"✓ ویڈیو تیار", vNoSupport:"یہ براؤزر ویڈیو ریکارڈنگ سپورٹ نہیں کرتا — Chrome استعمال کریں۔", vWebm:"نوٹ: فائل WebM ہے؛ WhatsApp کے لیے اگر نہ چلے تو Chrome (Android/PC) کا نیا ورژن MP4 بناتا ہے۔",
   },
   en: {
     keyTitle:"1. Your Gemini API key", remember:"Remember on this device", testKey:"Test key", clearKey:"Clear key",
@@ -128,6 +153,9 @@ const T = {
     part:"Part", of:"of", retry:"retrying", done:"✓ Done", duration:"Length", size:"Size", cancelled:"Cancelled.", mp3Wait:"Encoding MP3…",
     e400:"Bad request (400) — check the model name or text.", e401:"Invalid key or no permission (401/403).", e404:"Model not found (404) — press 'Load models'.",
     e429:"Quota exceeded (429) — wait and retry, or check limits in Google AI Studio.", eNet:"Network or server problem.", eNoAudio:"No audio in the response.",
+    videoTitle:"5. Caption video (experimental)", videoNote:"Your audio + Urdu captions with word highlighting + waveform. Recorded in real time (5 min audio = 5 min), keep this tab open and visible. Word timing is approximate.",
+    bgImages:"Background pictures (optional, e.g. made with ChatGPT — shown in order)", videoSize:"Size", makeVideo:"🎬 Make video", dlVideo:"Download video",
+    vMaking:"Making video… keep this tab open", vDone:"✓ Video ready", vNoSupport:"This browser can't record video — use Chrome.", vWebm:"Note: file is WebM; if WhatsApp rejects it, a recent Chrome (Android/PC) produces MP4.",
   }
 };
 const OPTS = {
@@ -146,7 +174,7 @@ const API = "https://generativelanguage.googleapis.com/v1beta";
 const SR = 24000, CHUNK = 900;
 
 const $ = id => document.getElementById(id);
-let lang = "ur", pcmParts = [], wavBlob = null, abortCtl = null;
+let lang = "ur", pcmParts = [], partTexts = [], wavBlob = null, abortCtl = null;
 const t = k => T[lang][k];
 
 function applyLang() {
@@ -279,7 +307,7 @@ $("go").onclick = async () => {
   if (!$("key").value.trim()) return msg("genMsg", t("needKey"), "bad");
   const chunks = splitText($("script").value);
   if (!chunks.length) return msg("genMsg", t("needText"), "bad");
-  abortCtl = new AbortController(); pcmParts = []; wavBlob = null;
+  abortCtl = new AbortController(); pcmParts = []; partTexts = chunks; wavBlob = null; $("videoCard").hidden = true;
   $("go").disabled = true; $("cancel").disabled = false; $("prog").hidden = false; $("prog").max = chunks.length; $("prog").value = 0;
   $("player").hidden = true; $("outBtns").hidden = true;
   try {
@@ -289,7 +317,7 @@ $("go").onclick = async () => {
       $("prog").value = i + 1;
     }
     wavBlob = wav(joinPcm(pcmParts));
-    $("player").src = URL.createObjectURL(wavBlob); $("player").hidden = false; $("outBtns").hidden = false;
+    $("player").src = URL.createObjectURL(wavBlob); $("player").hidden = false; $("outBtns").hidden = false; $("videoCard").hidden = false;
     const secs = (wavBlob.size - 44) / 2 / SR;
     msg("genMsg", `${t("done")} · ${t("duration")} ${Math.floor(secs/60)}:${String(Math.round(secs%60)).padStart(2,"0")} · ${t("size")} ${(wavBlob.size/1048576).toFixed(1)} MB`, "ok");
   } catch (e) {
@@ -308,6 +336,148 @@ $("share").onclick = async () => {
   const file = new File([blob], fname(blob.type === "audio/mpeg" ? "mp3" : "wav"), { type: blob.type });
   if (navigator.canShare?.({ files: [file] })) { try { await navigator.share({ files: [file], title: "Urdu Voice" }); } catch {} }
   else download(blob, file.name);
+};
+
+// ---- caption video (experimental) ----
+const GAP = Math.round(SR * 0.3) / SR;
+let vStop = null, videoBlob = null;
+
+// word timeline: each part's audio length is known exactly; inside a part, time is shared by character count
+function wordTimeline() {
+  const words = []; let t0 = 0;
+  pcmParts.forEach((pcm, i) => {
+    const dur = pcm.length / SR, ws = partTexts[i].split(/\s+/).filter(Boolean);
+    const total = ws.reduce((n, w) => n + w.length + 1, 0); let acc = 0;
+    ws.forEach(w => { const s = t0 + dur * acc / total; acc += w.length + 1; words.push({ w, s, e: t0 + dur * acc / total, part: i }); });
+    t0 += dur + GAP;
+  });
+  return words;
+}
+// group words into screen "pages" of up to maxLines lines; a page never spans two parts
+function layoutPages(ctx, words, maxW, maxLines) {
+  const space = ctx.measureText(" ").width, pages = []; let lines = [[]], lineW = 0;
+  const flush = () => { if (lines[0].length) pages.push(lines); lines = [[]]; lineW = 0; };
+  words.forEach((wd, i) => {
+    wd.width = ctx.measureText(wd.w).width;
+    if (i && words[i-1].part !== wd.part) flush();
+    if (lineW && lineW + space + wd.width > maxW) {
+      if (lines.length >= maxLines) flush(); else { lines.push([]); lineW = 0; }
+    }
+    lines[lines.length-1].push(wd); lineW += (lineW ? space : 0) + wd.width;
+    if (/[۔.!؟?…]$/.test(wd.w) && lines.length === maxLines && lineW > maxW * 0.5) flush();
+  });
+  flush();
+  return pages.map(ls => ({ lines: ls, s: ls[0][0].s, e: ls[ls.length-1].at(-1).e }));
+}
+async function loadImages(files) {
+  return Promise.all([...files].map(f => new Promise(res => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = URL.createObjectURL(f); })))
+    .then(a => a.filter(Boolean));
+}
+function drawCover(ctx, im, W, H, zoom) {
+  const r = Math.max(W / im.width, H / im.height) * zoom, w = im.width * r, h = im.height * r;
+  ctx.drawImage(im, (W - w) / 2, (H - h) / 2, w, h);
+}
+function pickMime() {
+  for (const m of ["video/mp4;codecs=avc1.42E01E,mp4a.40.2", "video/mp4", "video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"])
+    if (window.MediaRecorder && MediaRecorder.isTypeSupported(m)) return m;
+  return null;
+}
+
+$("makeVideo").onclick = async () => {
+  const mime = pickMime();
+  if (!mime || !HTMLCanvasElement.prototype.captureStream) return msg("vMsg", t("vNoSupport"), "bad");
+  const [W, H] = $("vSize").value.split("x").map(Number);
+  const cv = $("vCanvas"), ctx = cv.getContext("2d"); cv.width = W; cv.height = H;
+  const fontPx = Math.round(Math.min(W, H) * 0.058), font = `${fontPx}px "Noto Nastaliq Urdu"`;
+  await document.fonts.load(font, "اردو");
+  ctx.font = font; ctx.direction = "rtl";
+  const words = wordTimeline(), pages = layoutPages(ctx, words, W * 0.86, H > W ? 4 : 3);
+  const imgs = await loadImages($("bgFiles").files);
+
+  // audio graph -> recorder (and speakers, so you can hear it)
+  const pcm = joinPcm(pcmParts), total = pcm.length / SR;
+  const ac = new AudioContext({ sampleRate: SR }), buf = ac.createBuffer(1, pcm.length, SR), ch = buf.getChannelData(0);
+  for (let i = 0; i < pcm.length; i++) ch[i] = pcm[i] / 32768;
+  const src = ac.createBufferSource(); src.buffer = buf;
+  const dest = ac.createMediaStreamDestination(); src.connect(dest); src.connect(ac.destination);
+  const stream = new MediaStream([...cv.captureStream(30).getVideoTracks(), ...dest.stream.getAudioTracks()]);
+  const rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 3_000_000 }), parts = [];
+  rec.ondataavailable = e => e.data.size && parts.push(e.data);
+
+  cv.hidden = false; $("vOut").hidden = true; $("dlVideo").hidden = true; $("shareVideo").hidden = true;
+  $("makeVideo").disabled = true; $("stopVideo").disabled = false; $("vProg").hidden = false; $("vProg").max = total;
+  msg("vMsg", t("vMaking"));
+
+  let raf, start, cancelled = false;
+  const finished = new Promise(res => rec.onstop = res);
+  const end = () => { cancelAnimationFrame(raf); if (rec.state !== "inactive") rec.stop(); try { src.stop(); } catch {} };
+  vStop = () => { cancelled = true; end(); };
+  src.onended = end;
+
+  const bars = 48, lineH = fontPx * 2.1;
+  function frame() {
+    const now = Math.min(ac.currentTime - start, total);
+    // background: picture slideshow with slow zoom, or gradient
+    if (imgs.length) {
+      const per = total / imgs.length, k = Math.min(imgs.length - 1, Math.floor(now / per)), f = (now - k * per) / per;
+      drawCover(ctx, imgs[k], W, H, 1 + 0.08 * f);
+      ctx.fillStyle = "rgba(0,0,0,0.45)"; ctx.fillRect(0, 0, W, H);
+    } else {
+      const g = ctx.createLinearGradient(0, 0, W, H); g.addColorStop(0, "#0f172a"); g.addColorStop(1, "#14532d");
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    }
+    // waveform from the audio around "now"
+    const i0 = Math.floor(now * SR), win = Math.floor(SR * 0.04), bw = W * 0.7 / bars, wy = H * 0.18;
+    ctx.fillStyle = "rgba(34,197,94,0.9)";
+    for (let b = 0; b < bars; b++) {
+      let peak = 0; const o = i0 + (b - bars / 2) * win;
+      for (let j = 0; j < win; j += 24) peak = Math.max(peak, Math.abs(pcm[o + j] || 0));
+      const h = Math.max(4, (peak / 32768) * H * 0.12);
+      ctx.fillRect(W * 0.15 + b * bw, wy - h / 2, bw * 0.6, h);
+    }
+    // captions: current page, current word highlighted, drawn right-to-left
+    const page = pages.find(p => now >= p.s - 0.05 && now < p.e + GAP) || pages.findLast(p => p.s <= now);
+    if (page) {
+      ctx.font = font; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+      const top = H * (H > W ? 0.62 : 0.6) - (page.lines.length - 1) * lineH / 2, space = ctx.measureText(" ").width;
+      page.lines.forEach((ln, li) => {
+        const lw = ln.reduce((n, w) => n + w.width, 0) + space * (ln.length - 1);
+        let x = W / 2 + lw / 2; const y = top + li * lineH;
+        ln.forEach(wd => {
+          const on = now >= wd.s && now < wd.e;
+          if (on) { ctx.fillStyle = "rgba(34,197,94,0.95)"; ctx.fillRect(x - wd.width - 8, y - lineH * 0.42, wd.width + 16, lineH * 0.84); }
+          ctx.fillStyle = on ? "#052e14" : (now >= wd.e ? "#ffffff" : "rgba(255,255,255,0.7)");
+          ctx.fillText(wd.w, x, y);
+          x -= wd.width + space;
+        });
+      });
+    }
+    // progress line
+    ctx.fillStyle = "rgba(255,255,255,0.25)"; ctx.fillRect(0, H - 8, W, 8);
+    ctx.fillStyle = "#22c55e"; ctx.fillRect(W - W * now / total, H - 8, W * now / total, 8);
+    $("vProg").value = now;
+    raf = requestAnimationFrame(frame);
+  }
+
+  rec.start(1000);
+  await ac.resume(); start = ac.currentTime + 0.1; src.start(start);
+  frame();
+  await finished; ac.close();
+  $("makeVideo").disabled = false; $("stopVideo").disabled = true;
+  if (cancelled) return msg("vMsg", t("cancelled"), "bad");
+  videoBlob = new Blob(parts, { type: mime.split(";")[0] });
+  $("vOut").src = URL.createObjectURL(videoBlob); $("vOut").hidden = false; cv.hidden = true;
+  $("dlVideo").hidden = false; $("shareVideo").hidden = false;
+  msg("vMsg", `${t("vDone")} · ${(videoBlob.size / 1048576).toFixed(1)} MB` + (mime.startsWith("video/webm") ? " · " + t("vWebm") : ""), "ok");
+};
+$("stopVideo").onclick = () => vStop?.();
+const vName = () => fname(videoBlob.type === "video/mp4" ? "mp4" : "webm");
+$("dlVideo").onclick = () => videoBlob && download(videoBlob, vName());
+$("shareVideo").onclick = async () => {
+  if (!videoBlob) return;
+  const file = new File([videoBlob], vName(), { type: videoBlob.type });
+  if (navigator.canShare?.({ files: [file] })) { try { await navigator.share({ files: [file], title: "Urdu Voice" }); } catch {} }
+  else download(videoBlob, file.name);
 };
 
 // ---- init ----
