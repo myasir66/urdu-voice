@@ -111,6 +111,8 @@
     <div id="thumbs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-top:8px"></div>
     <label data-t="bgImages"></label>
     <input id="bgFiles" type="file" accept="image/*" multiple>
+    <label data-t="bgVideo"></label>
+    <div class="row"><input id="bgVidFile" type="file" accept="video/*"><button id="bgVidClear" data-t="vidClear" hidden></button></div>
     <label data-t="videoSize"></label>
     <select id="vSize">
       <option value="720x1280">9:16 (WhatsApp Status / Reels / Shorts)</option>
@@ -186,7 +188,7 @@ const T = {
     e400:"درخواست غلط ہے (400) — ماڈل کا نام یا متن چیک کریں۔", e401:"کی غلط ہے یا اجازت نہیں (401/403)۔", e404:"یہ ماڈل موجود نہیں (404) — 'ماڈل لوڈ کریں' دبائیں۔",
     e429:"حد ختم (429) — کچھ دیر بعد کوشش کریں یا Google AI Studio میں حد دیکھیں۔", eNet:"انٹرنیٹ یا سرور کا مسئلہ۔", eNoAudio:"جواب میں آڈیو نہیں آیا۔",
     videoTitle:"۵۔ کیپشن ویڈیو (تجرباتی)", videoNote:"آواز + اردو کیپشن۔ ویڈیو بننے میں آڈیو جتنا وقت لگتا ہے، ٹیب کھلا رکھیں۔",
-    bgImages:"یا اپنی تصاویر اپ لوڈ کریں (ترتیب سے برابر وقت کے لیے دکھائی جائیں گی)", videoSize:"سائز", makeVideo:"🎬 ویڈیو بنائیں", dlVideo:"ویڈیو ڈاؤن لوڈ",
+    bgImages:"یا اپنی تصاویر اپ لوڈ کریں (ترتیب سے برابر وقت کے لیے دکھائی جائیں گی)", bgVideo:"یا پس منظر کے لیے ویڈیو اپ لوڈ کریں (تصاویر کی جگہ؛ چھوٹی ہو تو دہرائی جائے گی، اس کی آواز بند رہے گی)", vidClear:"ویڈیو ہٹائیں", vidBad:"یہ ویڈیو فائل نہیں کھل سکی۔", vidLoaded:"🎞️ پس منظر ویڈیو لگ گئی", videoSize:"سائز", makeVideo:"🎬 ویڈیو بنائیں", dlVideo:"ویڈیو ڈاؤن لوڈ",
     autoTitle:"خودکار تصاویر: تعداد اور انداز", autoPics:"🖼️ تصاویر بنائیں", redo:"دوبارہ", picPlan:"مناظر تیار ہو رہے ہیں…", picDraw:"تصویر", picDone:"✓ تصاویر تیار — ہر تصویر اپنے حصے پر دکھائی جائے گی۔ کسی تصویر کو بدلنے کے لیے 'دوبارہ' دبائیں۔", picNeedText:"پہلے اسکرپٹ باکس میں متن لکھیں۔", picFail:"تصویر نہیں بنی", picCost:"نوٹ: تصاویر Google کی حد/بل میں شمار ہوتی ہیں۔", upReplaces:"(اپ لوڈ کی گئی تصاویر خودکار تصاویر کی جگہ لے لیں گی)", imgBad:"کچھ تصاویر نہیں کھل سکیں (JPG/PNG استعمال کریں)",
     advanced:"⚙️ مزید سیٹنگز (اختیاری)", capLines:"کیپشن — ایک وقت میں کتنی لائنیں", styleTitle:"🎨 رنگ اور انداز (کلک کریں)", sText:"متن کا رنگ", sHlMode:"ہائی لائٹ", sHlBg:"ہائی لائٹ کا رنگ", sHlText:"ہائی لائٹ والے لفظ کا رنگ", sOutline:"آؤٹ لائن کا رنگ", sOutlineW:"آؤٹ لائن موٹائی", sSize:"فونٹ سائز", sPos:"کیپشن کی جگہ", sWave:"ویو فارم کا رنگ", sWaveOn:"ویو فارم", sBg1:"پس منظر رنگ ۱ (تصویر نہ ہو تو)", sBg2:"پس منظر رنگ ۲", sDark:"تصویر پر اندھیرا", sReset:"ڈیفالٹ پر واپس", sOffset:"ہائی لائٹ کا وقت (ملی سیکنڈ) — دیر سے لگے تو بائیں (منفی) کریں:",
     hlModes:["ڈبہ","صرف لفظ کا رنگ","انڈر لائن","کوئی نہیں"], posModes:["اوپر","درمیان","نیچے"], onOff:["دکھائیں","چھپائیں"], sample:"یہ ایک نمونہ لائن ہے", vNeedAudio:"👆 پہلے اوپر ▶ آواز بنائیں دبائیں، یا نیچے اپنی آڈیو فائل اپ لوڈ کریں۔", audioSrc:"یا اپنی آڈیو فائل اپ لوڈ کریں (MP3/WAV/M4A/WhatsApp voice) — کیپشن کے لیے اوپر اسکرپٹ میں وہی متن ہونا چاہیے", aLoaded:"✓ آڈیو لوڈ ہو گئی", aBad:"یہ آڈیو فائل نہیں کھل سکی۔", aNoText:"کیپشن کے لیے اوپر اسکرپٹ باکس میں آڈیو کا متن لکھیں۔", vMaking:"ویڈیو بن رہی ہے… ٹیب کھلا رکھیں", vDone:"✓ ویڈیو تیار", vNoSupport:"یہ براؤزر ویڈیو ریکارڈنگ سپورٹ نہیں کرتا — Chrome استعمال کریں۔", vWebm:"نوٹ: فائل WebM ہے؛ WhatsApp کے لیے اگر نہ چلے تو Chrome (Android/PC) کا نیا ورژن MP4 بناتا ہے۔",
@@ -206,7 +208,7 @@ const T = {
     e400:"Bad request (400) — check the model name or text.", e401:"Invalid key or no permission (401/403).", e404:"Model not found (404) — press 'Load models'.",
     e429:"Quota exceeded (429) — wait and retry, or check limits in Google AI Studio.", eNet:"Network or server problem.", eNoAudio:"No audio in the response.",
     videoTitle:"5. Caption video (experimental)", videoNote:"Audio + Urdu captions. Takes as long as the audio — keep this tab open.",
-    bgImages:"Or upload your own pictures (shown in order, equal time each)", videoSize:"Size", makeVideo:"🎬 Make video", dlVideo:"Download video",
+    bgImages:"Or upload your own pictures (shown in order, equal time each)", bgVideo:"Or upload a background video (replaces pictures; loops if shorter, its sound is muted)", vidClear:"Remove video", vidBad:"Could not open this video file.", vidLoaded:"🎞️ Background video set", videoSize:"Size", makeVideo:"🎬 Make video", dlVideo:"Download video",
     autoTitle:"Auto pictures: count and style", autoPics:"🖼️ Make pictures", redo:"Redo", picPlan:"Planning scenes…", picDraw:"Picture", picDone:"✓ Pictures ready — each is shown during its part of the script. Press Redo on any picture to replace it.", picNeedText:"Write the script in the Script box first.", picFail:"picture failed", picCost:"Note: pictures count toward your Google quota/bill.", upReplaces:"(uploaded pictures replace the auto pictures)", imgBad:"some pictures could not be opened (use JPG/PNG)",
     advanced:"⚙️ Advanced settings (optional)", capLines:"Captions — lines shown at a time", styleTitle:"🎨 Colours & style (click)", sText:"Text colour", sHlMode:"Highlight", sHlBg:"Highlight colour", sHlText:"Highlighted word colour", sOutline:"Outline colour", sOutlineW:"Outline thickness", sSize:"Font size", sPos:"Caption position", sWave:"Waveform colour", sWaveOn:"Waveform", sBg1:"Background colour 1 (no picture)", sBg2:"Background colour 2", sDark:"Darken picture", sReset:"Reset to default", sOffset:"Highlight timing (ms) — if it lags, move left (negative):",
     hlModes:["Box","Word colour only","Underline","None"], posModes:["Top","Middle","Bottom"], onOff:["Show","Hide"], sample:"یہ ایک نمونہ لائن ہے", vNeedAudio:"👆 First press ▶ Generate above, or upload your own audio file below.", audioSrc:"Or upload your own audio (MP3/WAV/M4A/WhatsApp voice) — put its text in the Script box above for captions", aLoaded:"✓ Audio loaded", aBad:"Could not open this audio file.", aNoText:"Write the audio's text in the Script box above for captions.", vMaking:"Making video… keep this tab open", vDone:"✓ Video ready", vNoSupport:"This browser can't record video — use Chrome.", vWebm:"Note: file is WebM; if WhatsApp rejects it, a recent Chrome (Android/PC) produces MP4.",
@@ -461,7 +463,8 @@ async function loadImages(files) {
     .then(a => a.filter(Boolean));
 }
 function drawCover(ctx, im, W, H, zoom) {
-  const r = Math.max(W / im.width, H / im.height) * zoom, w = im.width * r, h = im.height * r;
+  const iw = im.videoWidth || im.width, ih = im.videoHeight || im.height;
+  const r = Math.max(W / iw, H / ih) * zoom, w = iw * r, h = ih * r;
   ctx.drawImage(im, (W - w) / 2, (H - h) / 2, w, h);
 }
 function pickMime() {
@@ -514,6 +517,7 @@ async function encodeMp4(cv, ctx, W, H, scene, codecs, isCancelled) {
       if (isCancelled()) return null;
       if (err) throw err;
       const now = i / FPS;
+      if (scene.vid) await seekVideo(scene.vid, now % scene.vid.duration);
       drawScene(ctx, W, H, now, scene);
       const f = new VideoFrame(cv, { timestamp: Math.round(now * 1e6), duration: Math.round(1e6 / FPS) });
       ve.encode(f, { keyFrame: i % (FPS * 2) === 0 }); f.close();
@@ -557,7 +561,7 @@ async function makeVideo() {
     pics = autoPics.filter(p => p.im).map(p => ({ im: p.im, s: Math.min(sceneStart(p.from), total) }));
     if (pics.length) pics[0].s = 0;
   }
-  const scene = { pics, total, pcm, pages, font, fontPx, st };
+  const scene = { pics, total, pcm, pages, font, fontPx, st, vid: bgVid };
 
   cv.hidden = false; $("vOut").hidden = true; $("dlVideo").hidden = true; $("shareVideo").hidden = true;
   $("makeVideo").disabled = true; $("stopVideo").disabled = false; $("vProg").hidden = false; $("vProg").max = total;
@@ -591,10 +595,11 @@ async function makeVideo() {
       $("vProg").value = now;
       raf = requestAnimationFrame(frame);
     }
+    if (scene.vid) { scene.vid.loop = true; scene.vid.currentTime = 0; try { await scene.vid.play(); } catch {} }
     rec.start(1000);
     await ac.resume(); start = ac.currentTime + 0.1; src.start(start);
     frame();
-    await finished; ac.close();
+    await finished; ac.close(); scene.vid?.pause();
     $("makeVideo").disabled = false; $("stopVideo").disabled = true;
     if (cancelled) return msg("vMsg", t("cancelled"), "bad");
     videoBlob = new Blob(parts, { type: mime.split(";")[0] });
@@ -652,8 +657,11 @@ function hexA(hex, a) { const n = parseInt(hex.slice(1), 16); return `rgba(${n >
 
 // one video frame (also used for the style preview)
 function drawScene(ctx, W, H, now, d) {
-  const { pics, total, pcm, pages, font, fontPx, st } = d, bars = 48, lineH = fontPx * 2.1;
-  if (pics.length) {
+  const { pics, total, pcm, pages, font, fontPx, st, vid } = d, bars = 48, lineH = fontPx * 2.1;
+  if (vid) {
+    drawCover(ctx, vid, W, H, 1);
+    ctx.fillStyle = `rgba(0,0,0,${st.dark})`; ctx.fillRect(0, 0, W, H);
+  } else if (pics.length) {
     let k = 0; while (k + 1 < pics.length && pics[k + 1].s <= now) k++;
     const segEnd = k + 1 < pics.length ? pics[k + 1].s : total, f = Math.min(1, (now - pics[k].s) / Math.max(1, segEnd - pics[k].s));
     drawCover(ctx, pics[k].im, W, H, 1 + 0.08 * f);
@@ -695,7 +703,7 @@ function drawScene(ctx, W, H, now, d) {
   ctx.fillStyle = st.wave; ctx.fillRect(W - W * now / total, H - 8, W * now / total, 8);
 }
 
-let previewImg = null, uploadedImgs = [];
+let previewImg = null, uploadedImgs = [], bgVid = null;
 async function drawPreview() {
   const [W, H] = $("vSize").value.split("x").map(Number), cv = $("sPreview"), ctx = cv.getContext("2d");
   cv.width = W; cv.height = H;
@@ -706,7 +714,7 @@ async function drawPreview() {
   const pages = layoutPages(ctx, words, W * 0.86, nLines);
   const pcm = new Int16Array(SR * 6).map((_, i) => 12000 * Math.sin(i / 9) * Math.abs(Math.sin(i / 2500)));
   const pic = autoPics.find(p => p.im)?.im || previewImg;
-  drawScene(ctx, W, H, 1.5, { pics: pic ? [{ im: pic, s: 0 }] : [], total: 5, pcm, pages, font, fontPx, st });
+  drawScene(ctx, W, H, 1.5, { pics: pic ? [{ im: pic, s: 0 }] : [], total: 5, pcm, pages, font, fontPx, st, vid: bgVid });
 }
 
 // ---- auto pictures (same Gemini key) ----
@@ -831,6 +839,34 @@ $("bgFiles").addEventListener("change", async () => {
   }
   previewImg = uploadedImgs[0] || null; drawPreview();
   msg("vMsg", files.length ? `🖼️ ${uploadedImgs.length}/${files.length} ✓` + (uploadedImgs.length < files.length ? " — " + t("imgBad") : "") : "", uploadedImgs.length < files.length ? "bad" : "ok");
+});
+// ---- background video: copied into memory at selection (phones may block reading the file later) ----
+function seekVideo(v, time) {
+  return new Promise(res => {
+    if (Math.abs(v.currentTime - time) < 0.001 && v.readyState >= 2) return res();
+    let to; const done = () => { clearTimeout(to); v.removeEventListener("seeked", done); res(); };
+    v.addEventListener("seeked", done); to = setTimeout(done, 3000); v.currentTime = time;
+  });
+}
+function clearBgVid() {
+  if (bgVid) { bgVid.pause(); URL.revokeObjectURL(bgVid.src); }
+  bgVid = null; $("bgVidFile").value = ""; $("bgVidClear").hidden = true; drawPreview();
+}
+$("bgVidClear").onclick = () => { clearBgVid(); msg("vMsg", ""); };
+$("bgVidFile").addEventListener("change", async () => {
+  const f = $("bgVidFile").files[0]; if (!f) return;
+  if (bgVid) { bgVid.pause(); URL.revokeObjectURL(bgVid.src); bgVid = null; }
+  msg("vMsg", "…");
+  try {
+    const blob = new Blob([await f.arrayBuffer()], { type: f.type || "video/mp4" });
+    const v = document.createElement("video");
+    v.muted = true; v.playsInline = true; v.preload = "auto"; v.src = URL.createObjectURL(blob);
+    await new Promise((res, rej) => { v.onloadeddata = res; v.onerror = rej; setTimeout(() => rej(new Error("timeout")), 20000); });
+    if (!v.videoWidth || !isFinite(v.duration) || !v.duration) throw new Error("no video");
+    await seekVideo(v, Math.min(1.5, v.duration / 2));
+    bgVid = v; $("bgVidClear").hidden = false; drawPreview();
+    msg("vMsg", `${t("vidLoaded")} · ${Math.round(v.duration)}s`, "ok");
+  } catch (e) { console.warn(e); clearBgVid(); msg("vMsg", t("vidBad"), "bad"); }
 });
 </script>
 </body>
